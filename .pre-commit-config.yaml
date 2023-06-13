@@ -28,3 +28,9 @@ repos:
         args: [
           '--in-place',
         ]
+  - repo: local
+    hooks:
+      - name: pytest
+        id: pytest
+        language: system
+        entry: make run-tests
