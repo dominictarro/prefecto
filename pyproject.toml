@@ -6,3 +6,18 @@
 name = "cz_conventional_commits"
 version = "0.0.1"
 tag_format = "$version"
+
+[tool.pytest.ini_options]
+pythonpath = [
+  "src"
+]
+
+[tool.interrogate]
+ignore-init-module-imports = true
+ignore-init-module = true
+fail-under = 95
+exclude = ["setup.py"]
+
+[tool.isort]
+profile = "black"
+line_length = 88
