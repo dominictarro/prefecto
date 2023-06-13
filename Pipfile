@@ -12,6 +12,7 @@ flake8 = "*"
 black = "*"
 isort = "*"
 pytest = "*"
+interrogate = "*"
 
 [requires]
 python_version = "3.11"
