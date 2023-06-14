@@ -1,7 +1,7 @@
 """
 Pandas IO `Method`s and `ExtendedSerializer`.
 """
-from typing import Any
+from typing import Any, Literal
 
 try:
     import pandas as pd
@@ -87,10 +87,12 @@ class Excel(Method):
     """Method for reading and writing Excel files."""
 
     discriminator: str = "pandas.excel"
+    default_write_kwargs: dict[str, Any] = {"index": False}
     __read__ = pd.read_excel
     __write__ = pd.DataFrame.to_excel
 
 
+@ExtendedSerializer.register
 class PandasSerializer(ExtendedSerializer):
     """Serializer for `pandas.DataFrame` objects.
 
@@ -136,4 +138,5 @@ class PandasSerializer(ExtendedSerializer):
     True
     """
 
+    type: Literal["pandas"] = "pandas"
     method = "pandas.tsv"
