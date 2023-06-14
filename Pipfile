@@ -16,3 +16,16 @@ interrogate = "*"
 
 [requires]
 python_version = "3.11"
+
+[requests]
+requests = "*"
+
+[pandas]
+pandas = "*"
+pyarrow = "*"
+openpyxl = "*"
+
+[polars]
+polars = "*"
+xlsxwriter = "*"
+xlsx2csv = "*"
