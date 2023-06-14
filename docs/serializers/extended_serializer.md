@@ -1,5 +1,7 @@
 # ExtendedSerializer
 
+Type: `ext`
+
 ::: src.prefecto.serializers.core.ExtendedSerializer
     options:
         members:
