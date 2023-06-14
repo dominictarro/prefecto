@@ -15,6 +15,7 @@ pythonpath = [
 [tool.interrogate]
 ignore-init-module-imports = true
 ignore-init-module = true
+ignore-init-method = true
 fail-under = 95
 exclude = ["setup.py"]
 

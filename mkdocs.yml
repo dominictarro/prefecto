@@ -3,6 +3,16 @@ site_url: https://prefecto.readthedocs.io
 repo_url: https://github.com/dominictarro/prefecto
 theme: readthedocs
 
+nav:
+  - Home: index.md
+  - "Concurrency":
+    - batch_task.md
+
 plugins: 
-  - search
-  - mkdocstrings
+  - search:
+  - mkdocstrings:
+      default_handler: python
+      handlers:
+        python:
+          options:
+            show_source: false
