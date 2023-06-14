@@ -12,6 +12,7 @@ nav:
     - serializers/method.md
     - serializers/functions.md
     - "Pandas":
+      - serializers/pandas/pandas_serializer.md
       - serializers/pandas/methods.md
     - "Polars":
       - serializers/polars/methods.md
