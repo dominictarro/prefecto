@@ -15,6 +15,7 @@ nav:
       - serializers/pandas/pandas_serializer.md
       - serializers/pandas/methods.md
     - "Polars":
+      - serializers/polars/polars_serializer.md
       - serializers/polars/methods.md
 
 plugins: 
