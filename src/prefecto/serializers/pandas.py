@@ -11,10 +11,9 @@ except ImportError:
         " with `pip install pandas`."
     )
 
-from .core import ExtendedSerializer, Method, method
+from .core import ExtendedSerializer, Method
 
 
-@method
 class Parquet(Method):
     """Method for reading and writing Parquet files."""
 
@@ -23,7 +22,6 @@ class Parquet(Method):
     __write__ = pd.DataFrame.to_parquet
 
 
-@method
 class CSV(Method):
     """Method for reading and writing CSV files."""
 
@@ -33,7 +31,6 @@ class CSV(Method):
     __write__ = pd.DataFrame.to_csv
 
 
-@method
 class JSON(Method):
     """Method for reading and writing JSON files."""
 
@@ -42,7 +39,6 @@ class JSON(Method):
     __write__ = pd.DataFrame.to_json
 
 
-@method
 class JSONL(Method):
     """Method for reading and writing JSONL files."""
 
@@ -53,7 +49,6 @@ class JSONL(Method):
     __write__ = pd.DataFrame.to_json
 
 
-@method
 class Feather(Method):
     """Method for reading and writing Feather files."""
 
@@ -62,7 +57,6 @@ class Feather(Method):
     __write__ = pd.DataFrame.to_feather
 
 
-@method
 class Pickle(Method):
     """Method for reading and writing Pickle files."""
 
@@ -71,7 +65,6 @@ class Pickle(Method):
     __write__ = pd.DataFrame.to_pickle
 
 
-@method
 class TSV(Method):
     """Method for reading and writing TSV files."""
 
@@ -82,7 +75,6 @@ class TSV(Method):
     __write__ = pd.DataFrame.to_csv
 
 
-@method
 class Excel(Method):
     """Method for reading and writing Excel files."""
 

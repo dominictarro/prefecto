@@ -34,7 +34,6 @@ def method_registry(monkeypatch: MonkeyPatch):
 def test_method(method_registry):
     """Tests the method decorator."""
 
-    @core.method
     class Method(core.Method):
         """Dummy method."""
 
@@ -51,27 +50,24 @@ def test_method(method_registry):
 
 def test_method_missing_attr(method_registry):
     """Tests the method decorator with missing attributes."""
-    with pytest.raises(AttributeError):
+    with pytest.raises(AssertionError):
 
-        @core.method
         class _(core.Method):
             """Dummy method."""
 
             __read__ = dummyread
             __write__ = dummywrite
 
-    with pytest.raises(AttributeError):
+    with pytest.raises(AssertionError):
 
-        @core.method
         class _(core.Method):
             """Dummy method."""
 
             discriminator: str = "test.method.a"
             __write__ = dummywrite
 
-    with pytest.raises(AttributeError):
+    with pytest.raises(AssertionError):
 
-        @core.method
         class _(core.Method):
             """Dummy method."""
 
@@ -83,7 +79,6 @@ def test_method_missing_attr(method_registry):
 def test_extended_serializer_basic(method_registry):
     """Tests the serializer class with simple inputs."""
 
-    @core.method
     class _(core.Method):
         """Dummy method."""
 
