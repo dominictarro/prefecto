@@ -78,7 +78,8 @@ class MethodMeta(type):
 
 
 class Method(metaclass=MethodMeta):
-    """A method for reading and writing a type.
+    """A method for reading and writing a type. To be subclassed for access via
+    its discriminator.
 
     Args:
         discriminator (str): The discriminator for the method. This must be globally
@@ -94,28 +95,20 @@ class Method(metaclass=MethodMeta):
     Examples:
 
         ```python
+        from io import IOBase as IO
+        from prefecto.serializers import Method
+
         def read(io: IO, encoding: str = 'utf-8') -> str:
             return io.read().decode(encoding)
 
         def write(value: str, io: IO, encoding: str = 'utf-8') -> None:
             io.write(value.encode(encoding))
 
-        @method
         class Utf8(Method):
             discriminator = "utf8"
             __read__ = read
             __write__ = write
-            default_read_kwargs = {"encoding": "utf-8"}
 
-        @method
-        class Utf8(Method):
-            discriminator = "utf8"
-            __read__ = read
-            __write__ = write
-            default_read_kwargs = {"encoding": "utf-8"}
-            default_write_kwargs = {"encoding": "utf-8"}
-
-        @method
         class Latin1(Method):
             discriminator = "latin1"
             __read__ = read
@@ -160,17 +153,16 @@ class Method(metaclass=MethodMeta):
 
 
 def get_method(discriminator: str) -> Method:
-    """Gets the method for the discriminator.
+    """Gets the `Method` by its discriminator.
 
-    Parameters
-    ----------
-    discriminator : str
-        The discriminator for the method.
+    Args:
+        discriminator (str): The discriminator for the method.
 
-    Returns
-    -------
-    Callable
-        The method.
+    Raises:
+        KeyError: If the discriminator is not registered.
+
+    Returns:
+        Method: The method.
     """
     return __registry__[discriminator]
 
@@ -181,14 +173,43 @@ class ExtendedSerializer(Serializer):
     with their own methods for reading and writing. Good for complex types with
     standard read and write methods.
 
-    Parameters
-    ----------
-    method : str
-        The method to use for reading and writing. Must be a registered `Method`.
-    read_kwargs : dict[str, Any], optional
-        Keyword arguments for the read method. Overrides default arguments for the method.
-    write_kwargs : dict[str, Any], optional
-        Keyword arguments for the write method. Overrides default arguments for the method.
+    Args:
+        method (str): The method to use for reading and writing. Must be a registered
+            `Method`.
+        read_kwargs (dict[str, Any], optional): Keyword arguments for the read method.
+            Overrides default arguments for the method.
+        write_kwargs (dict[str, Any], optional): Keyword arguments for the write
+            method. Overrides default arguments for the method.
+
+    Examples:
+
+        ```python
+        from prefecto.serializers import ExtendedSerializer, Method, get_method
+
+        def read(io: IO, encoding: str = 'utf-8') -> str:
+            return io.read().decode(encoding)
+
+        def write(value: str, io: IO, encoding: str = 'utf-8') -> None:
+            io.write(value.encode(encoding))
+
+        class Utf8(Method):
+            discriminator = "utf8"
+            __read__ = read
+            __write__ = write
+
+        class Latin1(Method):
+            discriminator = "latin1"
+            __read__ = read
+            __write__ = write
+            default_read_kwargs = {"encoding": "latin1"}
+            default_write_kwargs = {"encoding": "latin1"}
+
+        ExtendedSerializer("utf8").dumps("Hello, world!")
+        ```
+        ```text
+        b'Hello, world!'
+        ```
+
     """
 
     method: str
@@ -197,18 +218,32 @@ class ExtendedSerializer(Serializer):
     type: Literal["ext"] = "ext"
 
     def get_method(self) -> Method:
-        """The method to use for reading and writing."""
+        """Gets the `Method` to read and write objects with."""
         return get_method(self.method)
 
     def dumps(self, value: Any) -> bytes:
-        """Serialize the object with `Method.write`."""
+        """Serialize the object with `Method.write`.
+
+        Args:
+            value (Any): The object to serialize.
+
+        Returns:
+            bytes: The serialized object.
+        """
         method = get_method(self.method)
         with io.BytesIO() as buffer:
             method.write(value, buffer, **(self.write_kwargs or {}))
             return buffer.getvalue()
 
     def loads(self, value: bytes) -> Any:
-        """Deserialize the object with `Method.read`."""
+        """Deserialize the object with `Method.read`.
+
+        Args:
+            value (bytes): The serialized object.
+
+        Returns:
+            Any: The deserialized object.
+        """
         method = get_method(self.method)
         with io.BytesIO(value) as buffer:
             return method.read(buffer, **(self.read_kwargs or {}))

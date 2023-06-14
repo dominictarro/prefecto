@@ -7,6 +7,10 @@ nav:
   - Home: index.md
   - "Concurrency":
     - batch_task.md
+  - "Serialization":
+    - serializers/extended_serializer.md
+    - serializers/method.md
+    - serializers/functions.md
 
 plugins: 
   - search:
