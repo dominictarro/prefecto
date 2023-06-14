@@ -13,7 +13,8 @@ nav:
     - serializers/functions.md
     - "Pandas":
       - serializers/pandas/methods.md
-
+    - "Polars":
+      - serializers/polars/methods.md
 
 plugins: 
   - search:
