@@ -1,0 +1,8 @@
+site_name: Prefecto
+site_url: https://prefecto.readthedocs.io
+repo_url: https://github.com/dominictarro/prefecto
+theme: readthedocs
+
+plugins: 
+  - search
+  - mkdocstrings
