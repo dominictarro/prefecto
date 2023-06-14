@@ -11,11 +11,15 @@ nav:
     - serializers/extended_serializer.md
     - serializers/method.md
     - serializers/functions.md
+    - "Pandas":
+      - serializers/pandas/methods.md
+
 
 plugins: 
   - search:
   - mkdocstrings:
       default_handler: python
+      enable_inventory: true
       handlers:
         python:
           options:
