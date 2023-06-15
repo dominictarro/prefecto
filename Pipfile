@@ -15,6 +15,7 @@ pytest = "*"
 interrogate = "*"
 mkdocs = "*"
 mkdocstrings = {extras = ["python"], version = "*"}
+versioneer = "*"
 
 [requires]
 python_version = "3.11"
