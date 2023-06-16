@@ -2,6 +2,8 @@
 Tools to improve Prefect concurrently.
 
 """
+from __future__ import annotations
+
 from typing import Any, TypeVar
 
 from prefect.futures import PrefectFuture

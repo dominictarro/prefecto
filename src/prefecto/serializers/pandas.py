@@ -1,6 +1,8 @@
 """
 Pandas IO `Method`s and `ExtendedSerializer`.
 """
+from __future__ import annotations
+
 from typing import Any, Literal
 
 try:
