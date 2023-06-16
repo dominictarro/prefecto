@@ -1,6 +1,8 @@
 """
 Tests for the `serializers.polars` module.
 """
+from __future__ import annotations
+
 import polars as pl
 import pytest
 

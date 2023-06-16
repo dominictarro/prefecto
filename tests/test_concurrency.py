@@ -2,6 +2,8 @@
 Unit tests for the `concurrency` module.
 
 """
+from __future__ import annotations
+
 from prefect import flow, task
 
 from prefecto.concurrency import BatchTask

@@ -1,6 +1,8 @@
 """
 Tests for the logging module.
 """
+from __future__ import annotations
+
 import logging
 
 from prefecto.logging import get_prefect_or_default_logger

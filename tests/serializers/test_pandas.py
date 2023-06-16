@@ -1,6 +1,8 @@
 """
 Tests for the `serializers.pandas` module.
 """
+from __future__ import annotations
+
 import pandas as pd
 import pytest
 
