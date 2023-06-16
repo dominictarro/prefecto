@@ -1,6 +1,8 @@
 """
 Tests for the `serializers.core` module.
 """
+from __future__ import annotations
+
 import io
 from typing import Any
 

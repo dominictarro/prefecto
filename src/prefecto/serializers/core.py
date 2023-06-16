@@ -1,6 +1,8 @@
 """
 Module for the Method class, its factory wrapper, and the ExtendedSerializer.
 """
+from __future__ import annotations
+
 import functools
 import io
 from typing import Any, Callable, Generic, Literal, TypeVar

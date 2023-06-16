@@ -1,6 +1,8 @@
 """
 Prefect logging utilities.
 """
+from __future__ import annotations
+
 import logging
 
 from prefect.logging import get_run_logger
