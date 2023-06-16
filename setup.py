@@ -48,6 +48,8 @@ pipfile = toml.load("Pipfile")
 
 packages = pipenv_to_requirements(pipfile["packages"])
 dev_packages = pipenv_to_requirements(pipfile["dev-packages"])
+pandas_packages = pipenv_to_requirements(pipfile["pandas"])
+polars_packages = pipenv_to_requirements(pipfile["polars"])
 
 setup(
     # Package metadata
@@ -72,7 +74,11 @@ setup(
     # Requirements
     python_requires=">=3.7",
     install_requires=packages,
-    extras_require={"dev": dev_packages},
+    extras_require={
+        "dev": dev_packages,
+        "pandas": pandas_packages,
+        "polars": polars_packages,
+    },
     classifiers=[
         "Natural Language :: English",
         "Intended Audience :: Developers",
