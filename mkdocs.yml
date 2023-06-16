@@ -17,6 +17,7 @@ nav:
     - "Polars":
       - serializers/polars/polars_serializer.md
       - serializers/polars/methods.md
+  - "License": license.md
 
 plugins: 
   - search:
