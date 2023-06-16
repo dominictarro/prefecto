@@ -2,7 +2,6 @@
 requires = ["setuptools", "versioneer[toml]", "toml"]
 build-backend = "setuptools.build_meta"
 
-
 [tool.pytest.ini_options]
 pythonpath = [
   "src"
@@ -13,8 +12,12 @@ ignore-init-module-imports = true
 ignore-init-module = true
 ignore-init-method = true
 fail-under = 95
-exclude = ["setup.py"]
+exclude = ["setup.py", "versioneer.py", "src/prefecto/_version.py"]
 
 [tool.isort]
 profile = "black"
 line_length = 88
+skip = ["versioneer.py", "src/prefecto/_version.py", "src/prefecto/__init__.py"]
+
+[tool.black]
+line-length = 88
