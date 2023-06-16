@@ -16,6 +16,7 @@ interrogate = "*"
 mkdocs = "*"
 mkdocstrings = {extras = ["python"], version = "*"}
 versioneer = "*"
+coverage = "*"
 
 [requires]
 python_version = "3.11"
