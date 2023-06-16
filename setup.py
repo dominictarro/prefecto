@@ -6,9 +6,48 @@ import toml
 import versioneer
 from setuptools import find_packages
 
+
+def pipenv_to_requirements(section: dict) -> list[str]:
+    """Converts pipenv packages to requirements strings recognizable by `pip`.
+
+    Example:
+        ```python
+        pipenv_to_requirements(
+            {
+                "pckg1": "*",
+                "pckg2": {"version": ">=0.9.0", "extras": "extra1"},
+                "pckg3": ">=1.2.1",
+                "pckg4": {"version": "*", "extras": ["extra1", "extra2"]},
+            }
+        )
+        ```
+        ```
+        ["pckg1", "pck2[extra1]>=0.9.0", "pckg3>=1.2.1", "pckg4[extra1,extra2]"]
+        ```
+    """
+    requirements = []
+    for k, v in section.items():
+        if isinstance(v, dict):
+            reqstring = k
+            if "extras" in v:
+                if len(v["extras"]) > 1:
+                    reqstring += f"[{','.join(v['extras'])}]"
+                else:
+                    reqstring += f"[{v['extras'][0]}]"
+            if "version" in v and v["version"] != "*":
+                reqstring += f"{v['version']}"
+        else:
+            reqstring = k
+            if v != "*":
+                reqstring += f"{v}"
+        requirements.append(reqstring)
+    return requirements
+
+
 pipfile = toml.load("Pipfile")
-packages = [pckg for pckg in pipfile["packages"].keys()]
-dev_packages = [pckg for pckg in pipfile["dev-packages"].keys()]
+
+packages = pipenv_to_requirements(pipfile["packages"])
+dev_packages = pipenv_to_requirements(pipfile["dev-packages"])
 
 setup(
     # Package metadata
