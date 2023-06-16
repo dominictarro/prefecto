@@ -11,10 +11,9 @@ except ImportError:
         " with `pip install pandas`."
     )
 
-from .core import ExtendedSerializer, Method, method
+from .core import ExtendedSerializer, Method
 
 
-@method
 class Parquet(Method):
     """Method for reading and writing Parquet files."""
 
@@ -23,7 +22,6 @@ class Parquet(Method):
     __write__ = pd.DataFrame.to_parquet
 
 
-@method
 class CSV(Method):
     """Method for reading and writing CSV files."""
 
@@ -33,7 +31,6 @@ class CSV(Method):
     __write__ = pd.DataFrame.to_csv
 
 
-@method
 class JSON(Method):
     """Method for reading and writing JSON files."""
 
@@ -42,7 +39,6 @@ class JSON(Method):
     __write__ = pd.DataFrame.to_json
 
 
-@method
 class JSONL(Method):
     """Method for reading and writing JSONL files."""
 
@@ -53,7 +49,6 @@ class JSONL(Method):
     __write__ = pd.DataFrame.to_json
 
 
-@method
 class Feather(Method):
     """Method for reading and writing Feather files."""
 
@@ -62,7 +57,6 @@ class Feather(Method):
     __write__ = pd.DataFrame.to_feather
 
 
-@method
 class Pickle(Method):
     """Method for reading and writing Pickle files."""
 
@@ -71,7 +65,6 @@ class Pickle(Method):
     __write__ = pd.DataFrame.to_pickle
 
 
-@method
 class TSV(Method):
     """Method for reading and writing TSV files."""
 
@@ -82,7 +75,6 @@ class TSV(Method):
     __write__ = pd.DataFrame.to_csv
 
 
-@method
 class Excel(Method):
     """Method for reading and writing Excel files."""
 
@@ -96,46 +88,35 @@ class Excel(Method):
 class PandasSerializer(ExtendedSerializer):
     """Serializer for `pandas.DataFrame` objects.
 
-    Parameters
-    ----------
-    method : str
-        The method to use for reading and writing. Must be a registered
-        `Method`. Defaults to "pandas.tsv".
-    read_kwargs : dict[str, Any], optional
-        Keyword arguments for the read method. Overrides default arguments for
-        the method.
-    write_kwargs : dict[str, Any], optional
-        Keyword arguments for the write method. Overrides default arguments
-        for the method.
+    Args:
+        method (str, optional): The method to use for reading and writing.
+            Must be a registered `Method`. Defaults to "pandas.tsv".
+        read_kwargs (dict[str, Any], optional): Keyword arguments for the read
+            method. Overrides default arguments for the method.
+        write_kwargs (dict[str, Any], optional): Keyword arguments for the
+            write method. Overrides default arguments for the method.
 
-    Examples
-    --------
-    Simple read and write.
-    >>> import pandas as pd
-    >>> from prefecto.serializers.pandas import PandasSerializer
-    >>> df = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
-    >>> blob = PandasSerializer().dumps(df)
-    >>> blob
-    b'a\\tb\\n1\\t4\\n2\\t5\\n3\\t6\\n'
-    >>> df2 = PandasSerializer().loads(blob)
-    >>> df2.equals(df)
-    True
+    Examples:
+        Simple read and write.
 
-    Using a different method.
-    >>> blob = PandasSerializer(method="pandas.csv").dumps(df)
-    >>> blob
-    b'a,b\\n1,4\\n2,5\\n3,6\\n'
-    >>> df2 = PandasSerializer(method="pandas.csv").loads(blob)
-    >>> df2.equals(df)
-    True
+        ```python
+        import pandas as pd
+        from prefecto.serializers.pandas import PandasSerializer
 
-    Using custom read and write kwargs.
-    >>> blob = PandasSerializer(write_kwargs={"index": True}).dumps(df)
-    >>> blob
-    b'index\\ta\\tb\\n0\\t1\\t4\\n1\\t2\\t5\\n2\\t3\\t6\\n'
-    >>> df2 = PandasSerializer(read_kwargs={"index_col": 0}).loads(blob)
-    >>> df2.equals(df)
-    True
+        df = pd.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
+        blob = PandasSerializer().dumps(df)
+        df2 = PandasSerializer().loads(blob)
+        assert df2.equals(df)
+        ```
+
+        Using custom read and write kwargs.
+
+        ```python
+        blob = PandasSerializer(write_kwargs={"index": True}).dumps(df)
+        df2 = PandasSerializer(read_kwargs={"index_col": 0}).loads(blob)
+        assert df2.equals(df)
+        ```
+
     """
 
     type: Literal["pandas"] = "pandas"

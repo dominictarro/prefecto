@@ -1,0 +1,30 @@
+site_name: Prefecto
+site_url: https://dominictarro.github.io/prefecto/
+repo_url: https://github.com/dominictarro/prefecto
+theme: readthedocs
+
+nav:
+  - Home: index.md
+  - "Concurrency":
+    - batch_task.md
+  - "Serialization":
+    - serializers/extended_serializer.md
+    - serializers/method.md
+    - serializers/functions.md
+    - "Pandas":
+      - serializers/pandas/pandas_serializer.md
+      - serializers/pandas/methods.md
+    - "Polars":
+      - serializers/polars/polars_serializer.md
+      - serializers/polars/methods.md
+  - "License": license.md
+
+plugins: 
+  - search:
+  - mkdocstrings:
+      default_handler: python
+      enable_inventory: true
+      handlers:
+        python:
+          options:
+            show_source: false

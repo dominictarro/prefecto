@@ -1,11 +1,7 @@
-# [build-system]
-# requires = ["setuptools", "toml"]
-# build-backend = "setuptools.build_meta"
+[build-system]
+requires = ["setuptools", "versioneer[toml]", "toml"]
+build-backend = "setuptools.build_meta"
 
-[tool.commitizen]
-name = "cz_conventional_commits"
-version = "0.0.1"
-tag_format = "$version"
 
 [tool.pytest.ini_options]
 pythonpath = [
@@ -15,6 +11,7 @@ pythonpath = [
 [tool.interrogate]
 ignore-init-module-imports = true
 ignore-init-module = true
+ignore-init-method = true
 fail-under = 95
 exclude = ["setup.py"]
 

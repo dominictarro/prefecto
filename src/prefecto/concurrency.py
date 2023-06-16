@@ -17,62 +17,43 @@ P = ParamSpec("P")  # The parameters of the task
 
 
 class BatchTask:
-    """Wraps a `Task` to perform `Task.map` in batches."""
+    """Wraps a `Task` to perform `Task.map` in batches.
+
+    Args:
+
+        task (Task): The task to wrap.
+        size (int): The size of the batches to perform `Task.map` on.
+
+    """
 
     def __init__(self, task: Task[P, R], size: int):
-        """Create a `BatchTask` to wrap a `Task` and perform `Task.map` in batches.
-
-        Parameters
-        ----------
-        task : Task[P, R]
-            The task to wrap.
-        size : int
-            The size of the batches to perform `Task.map` on.
-
-        Examples
-        --------
-        >>> from prefect import task
-        >>> from prefecto.concurrency import BatchTask
-        >>> @task
-        ... def add(a, b):
-        ...     return a + b
-        >>> batch_add = BatchTask(add, 3)
-        >>> batch_add.map([1,2,3,4,5], [2,3,4,5,6])
-        [
-            PrefectFuture<Success: 3>,
-            PrefectFuture<Success: 5>,
-            PrefectFuture<Success: 7>,
-            PrefectFuture<Success: 9>,
-            PrefectFuture<Success: 11>
-        ]
-        """
         self.task: Task = task
         self.size: int = size
 
     def _make_batches(self, **params) -> list[dict[str, list[Any]]]:
         """Create batches of arguments to pass to the `Task.map` calls.
 
-        Parameters
-        ----------
-        **params
-            Keyword arguments where each value is an iterable of equal length. Should
-            be at least one keyword argument.
+        Args:
+            **params : Keyword arguments where each value is an iterable of
+            equal length. Should be at least one keyword argument.
 
-        Returns
-        -------
-        list[dict[str, list[Any]]]
-            A list of dictionaries where each dictionary has the same keys as the
-            provided keyword arguments. The values of the dictionaries are lists with
-            lengths no greater than `BatchTask.size`.
+        Returns:
+            (list[dict[str, list[Any]]]): A list of dictionaries where each
+            dictionary has the same keys as the provided keyword arguments.
+            The values of the dictionaries are lists with lengths no greater
+            than `BatchTask.size`.
 
-        Examples
-        --------
+        Examples:
 
-        >>> BatchTask(task, 3)._make_batches(a=[1,2,3,4,5], b=[2,3,4,5,6])
-        [
-            {"a": [1,2,3], "b": [2,3,4]},
-            {"a": [4,5], "b": [4,5,6]}
-        ]
+            ```python
+            BatchTask(task, 3)._make_batches(a=[1,2,3,4,5], b=[2,3,4,5,6])
+            ```
+            ```json
+            [
+                {"a": [1,2,3], "b": [2,3,4]},
+                {"a": [4,5], "b": [4,5,6]}
+            ]
+            ```
         """
         parameters = sorted(params.keys())
         if len(parameters) == 0:
@@ -115,17 +96,55 @@ class BatchTask:
         """Perform a `Task.map` operation in batches of the keyword arguments. The
         arguments must be iterables of equal length.
 
-        Parameters
-        ----------
-        *args
-            Positional arguments to pass to the task.
-        **kwds
-            Keyword arguments to pass to the task.
+        Args:
 
-        Returns
-        -------
-        list[PrefectFuture]
+            *args: Positional arguments to pass to the task.
+            **kwds: Keyword arguments to pass to the task.
+
+        Returns:
             A list of futures for each batch.
+
+        Examples:
+
+            ```python
+            from prefect import flow, task
+            from prefecto.concurrency import BatchTask
+
+            @task
+            def add(a, b):
+                return a + b
+
+            @flow
+            def my_flow():
+                batch_add = BatchTask(add, 2)
+                return batch_add.map([1,2,3,4], [2,3,4,5])
+
+            print(my_flow())
+            ```
+
+            ```log
+            $ python my_flow.py
+            01:31:51.012 | INFO    | prefect.engine - Created flow run 'beryl-moth' for flow 'test'
+            01:31:52.238 | DEBUG   | Flow run 'beryl-moth' - Mapping 'add' batch 1 of 2.
+            01:31:52.239 | INFO    | Flow run 'beryl-moth' - Created task run 'add-0' for task 'add'
+            01:31:52.240 | INFO    | Flow run 'beryl-moth' - Submitted task run 'add-0' for execution.
+            01:31:52.253 | INFO    | Flow run 'beryl-moth' - Created task run 'add-1' for task 'add'
+            01:31:52.254 | INFO    | Flow run 'beryl-moth' - Submitted task run 'add-1' for execution.
+            01:31:52.259 | DEBUG   | Flow run 'beryl-moth' - Mapping 'add' batch 2 of 2.
+            01:31:52.258 | INFO    | Flow run 'beryl-moth' - Created task run 'add-3' for task 'add'
+            01:31:52.258 | INFO    | Flow run 'beryl-moth' - Submitted task run 'add-3' for execution.
+            01:31:52.260 | INFO    | Flow run 'beryl-moth' - Created task run 'add-2' for task 'add'
+            01:31:52.261 | INFO    | Flow run 'beryl-moth' - Submitted task run 'add-2' for execution.
+            01:31:52.675 | INFO    | Task run 'add-1' - Finished in state Completed()
+            01:31:52.770 | INFO    | Task run 'add-0' - Finished in state Completed()
+            01:31:52.885 | INFO    | Task run 'add-2' - Finished in state Completed()
+            01:31:53.075 | INFO    | Task run 'add-3' - Finished in state Completed()
+            01:31:53.979 | INFO    | Flow run 'beryl-moth' - Finished in state Completed()
+            ```
+
+            ```json
+            [3, 5, 7, 9]
+            ```
         """
         parameters = get_call_parameters(self.task.fn, args, kwds, apply_defaults=False)
         batches = self._make_batches(**parameters)
@@ -136,10 +155,11 @@ class BatchTask:
         """Applies `Task.map` to each batch.
 
         Args:
-            batches (list[dict[str, list[Any]]]): _description_
+            batches (list[dict[str, list[Any]]]): Batches of arguments to pass to
+            `Task.map`.
 
         Returns:
-            list[PrefectFuture]: _description_
+            A list of futures for each batch.
         """
         logger = logging.get_prefect_or_default_logger()
         results: list[PrefectFuture] = []

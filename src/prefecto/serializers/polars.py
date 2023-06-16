@@ -11,10 +11,9 @@ except ImportError:
         " with `pip install polars`."
     )
 
-from .core import ExtendedSerializer, Method, method
+from .core import ExtendedSerializer, Method
 
 
-@method
 class Parquet(Method):
     """Method for reading and writing Parquet files."""
 
@@ -23,7 +22,6 @@ class Parquet(Method):
     __write__ = pl.DataFrame.write_parquet
 
 
-@method
 class CSV(Method):
     """Method for reading and writing CSV files."""
 
@@ -33,7 +31,6 @@ class CSV(Method):
     __write__ = pl.DataFrame.write_csv
 
 
-@method
 class JSON(Method):
     """Method for reading and writing JSON files."""
 
@@ -42,7 +39,6 @@ class JSON(Method):
     __write__ = pl.DataFrame.write_json
 
 
-@method
 class NDJSON(Method):
     """Method for reading and writing NDJSON files."""
 
@@ -51,7 +47,6 @@ class NDJSON(Method):
     __write__ = pl.DataFrame.write_ndjson
 
 
-@method
 class TSV(Method):
     """Method for reading and writing TSV files."""
 
@@ -62,7 +57,6 @@ class TSV(Method):
     __write__ = pl.DataFrame.write_csv
 
 
-@method
 class Excel(Method):
     """Method for reading and writing Excel files."""
 
@@ -75,46 +69,51 @@ class Excel(Method):
 class PolarsSerializer(ExtendedSerializer):
     """Serializer for `polars.DataFrame` objects.
 
-    Parameters
-    ----------
-    method : str
-        The method to use for reading and writing. Must be a registered
-        `Method`. Defaults to "polars.tsv".
-    read_kwargs : dict[str, Any], optional
-        Keyword arguments for the read method. Overrides default arguments for
-        the method.
-    write_kwargs : dict[str, Any], optional
-        Keyword arguments for the write method. Overrides default arguments
-        for the method.
+    Args:
+        method (str, optional): The method to use for reading and writing.
+            Must be a registered `Method`. Defaults to "polars.tsv".
+        read_kwargs (dict[str, Any], optional): Keyword arguments for the read
+            method. Overrides default arguments for the method.
+        write_kwargs (dict[str, Any], optional): Keyword arguments for the
+            write method. Overrides default arguments for the method.
 
-    Examples
-    --------
-    Simple read and write.
-    >>> import polars as pl
-    >>> from prefecto.serializers.polars import PolarsSerializer
-    >>> df = pl.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
-    >>> blob = PolarsSerializer().dumps(df)
-    >>> blob
-    b'a\\tb\\n1\\t4\\n2\\t5\\n3\\t6\\n'
-    >>> df2 = PolarsSerializer().loads(blob)
-    >>> df2.frame_equal(df)
-    True
+    Examples:
+        Simple read and write.
 
-    Using a different method.
-    >>> blob = PolarsSerializer(method="polars.csv").dumps(df)
-    >>> blob
-    b'a,b\\n1,4\\n2,5\\n3,6\\n'
-    >>> df2 = PolarsSerializer(method="polars.csv").loads(blob)
-    >>> df2.frame_equal(df)
-    True
+        ```python
+        import polars as pl
+        from prefecto.serializers.polars import PolarsSerializer
+        df = pl.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
+        blob = PolarsSerializer().dumps(df)
+        print(blob)
+        df2 = PolarsSerializer().loads(blob)
+        assert df2.frame_equal(df)
+        ```
 
-    Using custom read and write kwargs.
-    >>> blob = PolarsSerializer(write_kwargs={"index": True}).dumps(df)
-    >>> blob
-    b'index\\ta\\tb\\n0\\t1\\t4\\n1\\t2\\t5\\n2\\t3\\t6\\n'
-    >>> df2 = PolarsSerializer(read_kwargs={"index_col": 0}).loads(blob)
-    >>> df2.frame_equal(df)
-    True
+        ```text
+        True
+        ```
+
+        Using a different method.
+
+        ```python
+        blob = PolarsSerializer(method="polars.csv").dumps(df)
+        df2 = PolarsSerializer(method="polars.csv").loads(blob)
+        assert df2.frame_equal(df)
+        ```
+
+        ```text
+        True
+        ```
+
+        Using custom read and write kwargs.
+
+        ```python
+        blob = PolarsSerializer(write_kwargs={"use_pyarrow": True}).dumps(df)
+        df2 = PolarsSerializer(read_kwargs={"use_pyarrow": True}).loads(blob)
+        assert df2.frame_equal(df)
+        ```
+
     """
 
     type: Literal["polars"] = "polars"
