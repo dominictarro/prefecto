@@ -1,7 +1,7 @@
 # Prefecto
 
 <p align="center">
-    <img src="./docs/assets/Monkeywrench-Data-Pipeline.png">
+    <img src="https://raw.githubusercontent.com/dominictarro/prefecto/main/docs/assets/Monkeywrench-Data-Pipeline.png">
     <br>
     <a href="https://pypi.python.org/pypi/prefecto/" alt="PyPI version">
         <img alt="PyPI" src="https://img.shields.io/pypi/v/prefecto?color=fe7200&labelColor=eeeeee"></a>
