@@ -44,6 +44,8 @@
               <ul class="current">
                 <li class="toctree-l1 current"><a class="reference internal current" href=".">Home</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a>
+    </li>
     </ul>
                 </li>
               </ul>
@@ -106,8 +108,57 @@
             <div class="section" itemprop="articleBody">
               
                 <h1 id="prefecto">Prefecto</h1>
-<p><img alt="Pacha papi" src="assets/pacha-prefecto.jpeg" /></p>
-<p>A handy helper for <a href="https://www.prefect.io/">Prefect</a> development.</p>
+<p align="center">
+    <img src="./assets/Monkeywrench-Data-Pipeline.png">
+    <br>
+    <a href="https://pypi.python.org/pypi/prefecto/" alt="PyPI version">
+        <img alt="PyPI" src="https://img.shields.io/pypi/v/prefecto?color=fe7200&labelColor=eeeeee"></a>
+    <a href="https://github.com/dominictarro/prefecto/" alt="Stars">
+        <img src="https://img.shields.io/github/stars/dominictarro/prefecto?color=fe7200&labelColor=eeeeee" /></a>
+    <a href="https://github.com/dominictarro/prefecto/pulse" alt="Activity">
+        <img src="https://img.shields.io/github/commit-activity/m/dominictarro/prefecto?color=fe7200&labelColor=eeeeee" /></a>
+</p>
+
+<p>Prefecto is a collection of tools to extend and augment <a href="https://www.prefect.io/">Prefect</a> capabilities.</p>
+<h2 id="getting-started">Getting Started</h2>
+<p>Install Prefecto with</p>
+<pre><code class="language-bash">pip install prefecto
+</code></pre>
+<p><em>Prefecto is only tested with Python 3.10 and higher. It may work with older versions, but it is not guaranteed.</em></p>
+<p>Break up <code>Task.map</code> into <a href="batch_task/#batchtask">batches</a>.</p>
+<pre><code class="language-python">from prefect import flow, task
+from prefecto.concurrency import BatchTask
+
+@task
+def task(x):
+    print(x)
+    return x
+
+@flow
+def flow():
+    results = BatchTask(task, size=100).map(range(1000))
+
+</code></pre>
+<p>Standard serializers for <a href="serializers/pandas/methods/"><code>pandas.DataFrame</code></a> and <a href="serializers/polars/methods/"><code>polars.DataFrame</code></a>.</p>
+<pre><code class="language-python">import polars as pl
+from prefect import flow, task
+from prefecto.serialization.polars import PolarsSerializer
+
+@task(serializer=PolarsSerializer(method=&quot;polars.parquet&quot;), persist_result=True, cache_result_in_memory=False)
+def parquet_task(df: pl.DataFrame) -&gt; pl.DataFrame:
+    ...
+
+@task(serializer=PolarsSerializer(method=&quot;polars.csv&quot;), persist_result=True, cache_result_in_memory=False)
+def csv_task(df: pl.DataFrame) -&gt; pl.DataFrame:
+    ...
+
+@flow
+def flow():
+    df = pl.DataFrame({&quot;a&quot;: [1, 2, 3], &quot;b&quot;: [4, 5, 6]})
+    df = parquet_task(df)
+    df = csv_task(df)
+    return df
+</code></pre>
               
             </div>
           </div><footer>
@@ -159,5 +210,5 @@
 
 <!--
 MkDocs version : 1.4.3
-Build Date UTC : 2023-06-17 19:40:52.343596+00:00
+Build Date UTC : 2023-06-17 22:11:50.684836+00:00
 -->
