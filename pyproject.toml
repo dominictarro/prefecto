@@ -17,7 +17,8 @@ exclude = ["setup.py", "versioneer.py", "src/prefecto/_version.py"]
 [tool.isort]
 profile = "black"
 line_length = 88
-skip = ["versioneer.py", "src/prefecto/_version.py", "src/prefecto/__init__.py"]
+skip = ["setup.py", "versioneer.py", "src/prefecto/_version.py", "src/prefecto/__init__.py"]
 
 [tool.black]
 line-length = 88
+extend-exclude = ["setup.py", "versioneer.py", "src/prefecto/_version.py"]
