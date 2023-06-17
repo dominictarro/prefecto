@@ -21,3 +21,4 @@ skip = ["versioneer.py", "src/prefecto/_version.py", "src/prefecto/__init__.py"]
 
 [tool.black]
 line-length = 88
+extend-exclude = ["versioneer.py"]
