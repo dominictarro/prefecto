@@ -62,3 +62,19 @@ def flow():
     df = csv_task(df)
     return df
 ```
+
+## Extras
+
+Prefecto includes a number of extras that are not installed by default.
+
+| Extra | Description |
+| --- | --- |
+| `pandas` | Adds support for [`pandas.DataFrame`](./serializers/pandas.md) serialization. |
+| `polars` | Adds support for [`polars.DataFrame`](./serializers/polars.md) serialization. |
+| `moto` | Adds support for mocking AWS's `boto3` with `moto` |
+
+Extras can be installed with
+
+```bash
+pip install prefecto[extra]
+```
