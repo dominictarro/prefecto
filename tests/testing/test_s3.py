@@ -1,6 +1,8 @@
 """
 Tests the `s3` testing fixtures module.
 """
+from __future__ import annotations
+
 import tempfile
 from pathlib import Path
 from typing import Any

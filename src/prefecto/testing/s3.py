@@ -1,6 +1,8 @@
 """
 Module for pytest fixtures.
 """
+from __future__ import annotations
+
 import contextlib
 from itertools import repeat
 from multiprocessing.pool import ThreadPool

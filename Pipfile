@@ -36,3 +36,4 @@ xlsx2csv = "*"
 
 [moto]
 moto = {extras = ["s3"], version = "*"}
+boto3 = "*"
