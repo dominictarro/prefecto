@@ -14,7 +14,7 @@ from moto import mock_s3
 
 @pytest.fixture
 def s3_mock():
-    """Creates a mock S3 bucket with `moto`."""
+    """Fixture to create a mock S3 bucket with `moto`."""
     with mock_s3():
         yield
 
@@ -44,6 +44,37 @@ def mock_bucket_factory(
         keys (list[str] | None, optional): The keys to export. If None, all keys will be exported.
         processes (int, optional): The number of threads to use for exporting. Defaults to 3.
         chunksize (int, optional): The chunksize to use for exporting. Defaults to 5.
+
+    Returns:
+        Callable[[], Generator["boto3.resources.factory.s3.Bucket", None, None]]: A factory function
+
+    Examples:
+
+        You can use the factory function to mock a bucket in your tests without exporting its contents:
+
+        ```python
+        from prefecto.testing.s3 import mock_bucket_factory
+
+        my_bucket = mock_bucket_factory("my-bucket")
+
+        def test_my_flow(my_bucket):
+            # Run your flow
+            ...
+        ```
+
+        Or you can create a fixture that exports the bucket's contents to a directory:
+        Useful for auditing folder structures and file contents after local tests.
+
+        ```python
+        from prefecto.testing.s3 import mock_bucket_factory
+
+        my_exported_bucket = mock_bucket_factory("my-bucket", export_path="path/to/export/dir")
+
+        def test_my_flow(my_exported_bucket):
+            # Run your flow
+            ...
+        ```
+
     """
 
     def mock_bucket():

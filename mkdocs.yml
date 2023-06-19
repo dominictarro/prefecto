@@ -18,6 +18,8 @@ nav:
     - "Polars":
       - serializers/polars/polars_serializer.md
       - serializers/polars/methods.md
+  - "Testing":
+    - testing/s3.md
   - "License": license.md
 
 plugins: 
