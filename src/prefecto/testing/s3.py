@@ -7,16 +7,7 @@ from pathlib import Path
 from typing import Callable, Generator
 
 import boto3
-import pytest
-from _pytest.fixtures import FixtureFunction
 from moto import mock_s3
-
-
-@pytest.fixture
-def s3_mock():
-    """Fixture to create a mock S3 bucket with `moto`."""
-    with mock_s3():
-        yield
 
 
 def _export(obj, path: Path):
