@@ -5,11 +5,10 @@ import contextlib
 import tempfile
 from pathlib import Path
 
-import moto
 import pytest
 from _pytest.fixtures import SubRequest
 
-from prefecto.testing.fixtures.s3 import mock_bucket_factory, s3_mock
+from prefecto.testing.s3 import mock_bucket_factory, s3_mock
 
 # Putting this here to work around black F811 rule
 s3_mock = s3_mock
