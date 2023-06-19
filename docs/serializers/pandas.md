@@ -1,8 +1,16 @@
-# Methods
+# Pandas
+
+## PandasSerializer
+
+Type: `pandas`
+
+::: src.prefecto.serializers.pandas.PandasSerializer
+
+## Methods
 
 `Method` classes for serializing `pandas.DataFrame`.
 
-## CSV
+### CSV
 
 Discriminator: `pandas.csv`
 
@@ -10,7 +18,7 @@ Discriminator: `pandas.csv`
     options:
         show_source: true
 
-## Excel
+### Excel
 
 Discriminator: `pandas.excel`
 
@@ -18,7 +26,7 @@ Discriminator: `pandas.excel`
     options:
         show_source: true
 
-## Feather
+### Feather
 
 Discriminator: `pandas.feather`
 
@@ -26,7 +34,7 @@ Discriminator: `pandas.feather`
     options:
         show_source: true
 
-## JSON
+### JSON
 
 Discriminator: `pandas.json`
 
@@ -34,7 +42,7 @@ Discriminator: `pandas.json`
     options:
         show_source: true
 
-## JSONL
+### JSONL
 
 Discriminator: `pandas.jsonl`
 
@@ -42,7 +50,7 @@ Discriminator: `pandas.jsonl`
     options:
         show_source: true
 
-## Parquet
+### Parquet
 
 Discriminator: `pandas.parquet`
 
@@ -50,7 +58,7 @@ Discriminator: `pandas.parquet`
     options:
         show_source: true
 
-## Pickle
+### Pickle
 
 Discriminator: `pandas.pickle`
 
@@ -58,7 +66,7 @@ Discriminator: `pandas.pickle`
     options:
         show_source: true
 
-## TSV
+### TSV
 
 Discriminator: `pandas.tsv`
 

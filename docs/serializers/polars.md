@@ -1,8 +1,18 @@
-# Methods
+# Polars
+
+Serialization module for for the `polars.DataFrame` type.
+
+## PolarsSerializer
+
+Type: `polars`
+
+::: src.prefecto.serializers.polars.PolarsSerializer
+
+## Methods
 
 `Method` classes for serializing `polars.DataFrame`.
 
-## CSV
+### CSV
 
 Discriminator: `polars.csv`
 
@@ -10,7 +20,7 @@ Discriminator: `polars.csv`
     options:
         show_source: true
 
-## Excel
+### Excel
 
 Discriminator: `polars.excel`
 
@@ -18,7 +28,7 @@ Discriminator: `polars.excel`
     options:
         show_source: true
 
-## JSON
+### JSON
 
 Discriminator: `polars.json`
 
@@ -26,7 +36,7 @@ Discriminator: `polars.json`
     options:
         show_source: true
 
-## NDJSON
+### NDJSON
 
 Discriminator: `polars.ndjson`
 
@@ -34,7 +44,7 @@ Discriminator: `polars.ndjson`
     options:
         show_source: true
 
-## Parquet
+### Parquet
 
 Discriminator: `polars.parquet`
 
@@ -42,7 +52,7 @@ Discriminator: `polars.parquet`
     options:
         show_source: true
 
-## TSV
+### TSV
 
 Discriminator: `polars.tsv`
 
