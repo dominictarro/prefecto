@@ -81,32 +81,33 @@ def mock_bucket_factory(
         """Creates a mock S3 bucket with `moto`. If given an export path, the mock bucket
         will export its contents during teardown.
         """
-        try:
-            s3 = boto3.resource("s3")
-            bucket = s3.Bucket(bucket_name)
-            bucket.create()
-            yield bucket
-        finally:
-            if export_path is not None:
+        with mock_s3():
+            try:
+                s3 = boto3.resource("s3")
+                bucket = s3.Bucket(bucket_name)
+                bucket.create()
+                yield bucket
+            finally:
+                if export_path is not None:
 
-                if keys is None:
-                    objects = bucket.objects.all()
-                else:
-                    objects = (bucket.Object(key) for key in keys)
+                    if keys is None:
+                        objects = bucket.objects.all()
+                    else:
+                        objects = (bucket.Object(key) for key in keys)
 
-                # Resolve the export path and create the bucket directory
-                bucket_path = Path(export_path) / bucket.name
-                bucket_path.mkdir(parents=True, exist_ok=True)
+                    # Resolve the export path and create the bucket directory
+                    bucket_path = Path(export_path) / bucket.name
+                    bucket_path.mkdir(parents=True, exist_ok=True)
 
-                if processes > 1:
-                    # Export the objects
-                    with ThreadPool(processes) as pool:
-                        pool.starmap(
-                            _export,
-                            zip(objects, repeat(bucket_path)),
-                            chunksize=chunksize,
-                        )
-                else:
-                    map(_export, objects, repeat(bucket_path))
+                    if processes > 1:
+                        # Export the objects
+                        with ThreadPool(processes) as pool:
+                            pool.starmap(
+                                _export,
+                                zip(objects, repeat(bucket_path)),
+                                chunksize=chunksize,
+                            )
+                    else:
+                        map(_export, objects, repeat(bucket_path))
 
     return mock_bucket

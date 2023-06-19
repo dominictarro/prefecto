@@ -8,10 +8,7 @@ from pathlib import Path
 import pytest
 from _pytest.fixtures import SubRequest
 
-from prefecto.testing.s3 import mock_bucket_factory, s3_mock
-
-# Putting this here to work around black F811 rule
-s3_mock = s3_mock
+from prefecto.testing.s3 import mock_bucket_factory
 
 
 @pytest.fixture(scope="module")
@@ -22,13 +19,12 @@ def tempdir():
 
 
 @pytest.fixture
-def export_bucket_manager(request: SubRequest, s3_mock, tempdir):
+def export_bucket_manager(request: SubRequest, tempdir):
     """A fixture that returns a context manager to create a mock S3 bucket and export
     contents upon exit.
 
     Args:
         request (SubRequest): The pytest request object. Used to access the `param`.
-        s3_mock: The `moto` mock S3 fixture.
         tempdir: The tempdir fixture.
 
     `request.param` is a tuple of the following:
