@@ -1,6 +1,6 @@
 # Polars
 
-Serialization module for for the `polars.DataFrame` type.
+Serialization module for `polars.DataFrame`.
 
 ## PolarsSerializer
 

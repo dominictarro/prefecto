@@ -1,5 +1,7 @@
 # Pandas
 
+Serialization module for `pandas.DataFrame`.
+
 ## PandasSerializer
 
 Type: `pandas`
