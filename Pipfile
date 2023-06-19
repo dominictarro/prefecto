@@ -33,3 +33,7 @@ openpyxl = "*"
 polars = "*"
 xlsxwriter = "*"
 xlsx2csv = "*"
+
+[pytest]
+pytest = "*"
+moto = {extras = ["s3"], version = "*"}
