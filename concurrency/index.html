@@ -3,9 +3,9 @@
 <head>
     <meta charset="utf-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://dominictarro.github.io/prefecto/batch_task/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://dominictarro.github.io/prefecto/concurrency/" />
       <link rel="shortcut icon" href="../img/favicon.ico" />
-    <title>BatchTask - Prefecto</title>
+    <title>Concurrency - Prefecto</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
@@ -13,9 +13,9 @@
     
       <script>
         // Current page data
-        var mkdocs_page_name = "BatchTask";
-        var mkdocs_page_input_path = "batch_task.md";
-        var mkdocs_page_url = "/prefecto/batch_task/";
+        var mkdocs_page_name = "Concurrency";
+        var mkdocs_page_input_path = "concurrency.md";
+        var mkdocs_page_url = "/prefecto/concurrency/";
       </script>
     
     <script src="../js/jquery-3.6.0.min.js" defer></script>
@@ -45,45 +45,44 @@
                 <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
                 </li>
               </ul>
-              <p class="caption"><span class="caption-text">Concurrency</span></p>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../license/">License</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
               <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">BatchTask</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Concurrency</a>
     <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#batchtask">BatchTask</a>
+    </li>
     <li class="toctree-l2"><a class="reference internal" href="#src.prefecto.concurrency.BatchTask">src.prefecto.concurrency.BatchTask</a>
     </li>
     <li class="toctree-l2"><a class="reference internal" href="#src.prefecto.concurrency.BatchTask.map">map()</a>
     </li>
     </ul>
                   </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Serialization</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="../serializers/extended_serializer/">ExtendedSerializer</a>
+                  <li class="toctree-l1"><a class="reference internal" href="../filesystems/">File Systems</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../serializers/method/">Method</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="../serializers/functions/">Functions</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="#">Pandas</a>
+                  <li class="toctree-l1"><a class="reference internal" href="#">Serialization</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../serializers/pandas/pandas_serializer/">PandasSerializer</a>
+                <li class="toctree-l2"><a class="reference internal" href="../serializers/serialization/">Serialization</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="../serializers/pandas/methods/">Methods</a>
+                <li class="toctree-l2"><a class="reference internal" href="#">Custom Serializers</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../serializers/pandas/">Pandas</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../serializers/polars/">Polars</a>
+                </li>
+    </ul>
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="#">Polars</a>
+                  <li class="toctree-l1"><a class="reference internal" href="#">Testing</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" href="../serializers/polars/polars_serializer/">PolarsSerializer</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="../serializers/polars/methods/">Methods</a>
+                <li class="toctree-l2"><a class="reference internal" href="../testing/s3/">S3</a>
                 </li>
     </ul>
                   </li>
-              </ul>
-              <ul>
-                <li class="toctree-l1"><a class="reference internal" href="../license/">License</a>
-                </li>
               </ul>
       </div>
     </div>
@@ -99,10 +98,10 @@
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
-          <li>Concurrency &raquo;</li>
-      <li>BatchTask</li>
+          <li>Reference &raquo;</li>
+      <li>Concurrency</li>
     <li class="wy-breadcrumbs-aside">
-          <a href="https://github.com/dominictarro/prefecto/edit/master/docs/batch_task.md" class="icon icon-github"> Edit on GitHub</a>
+          <a href="https://github.com/dominictarro/prefecto/edit/master/docs/concurrency.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
   </ul>
   <hr/>
@@ -110,7 +109,9 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
             <div class="section" itemprop="articleBody">
               
-                <h1 id="batchtask">BatchTask</h1>
+                <h1 id="concurrency">Concurrency</h1>
+<p>Module for advanced concurrency control.</p>
+<h2 id="batchtask">BatchTask</h2>
 
 
 <div class="doc doc-object doc-class">
@@ -284,8 +285,8 @@ print(my_flow())
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href=".." class="btn btn-neutral float-left" title="Home"><span class="icon icon-circle-arrow-left"></span> Previous</a>
-        <a href="../serializers/extended_serializer/" class="btn btn-neutral float-right" title="ExtendedSerializer">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="../license/" class="btn btn-neutral float-left" title="License"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../filesystems/" class="btn btn-neutral float-right" title="File Systems">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -312,10 +313,10 @@ print(my_flow())
         </span>
     
     
-      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+      <span><a href="../license/" style="color: #fcfcfc">&laquo; Previous</a></span>
     
     
-      <span><a href="../serializers/extended_serializer/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="../filesystems/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>

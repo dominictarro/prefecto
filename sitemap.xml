@@ -2,52 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://dominictarro.github.io/prefecto/</loc>
-         <lastmod>2023-06-17</lastmod>
+         <lastmod>2023-06-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://dominictarro.github.io/prefecto/batch_task/</loc>
-         <lastmod>2023-06-17</lastmod>
+         <loc>https://dominictarro.github.io/prefecto/concurrency/</loc>
+         <lastmod>2023-06-19</lastmod>
+         <changefreq>daily</changefreq>
+    </url>
+    <url>
+         <loc>https://dominictarro.github.io/prefecto/filesystems/</loc>
+         <lastmod>2023-06-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://dominictarro.github.io/prefecto/license/</loc>
-         <lastmod>2023-06-17</lastmod>
+         <lastmod>2023-06-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://dominictarro.github.io/prefecto/serializers/extended_serializer/</loc>
-         <lastmod>2023-06-17</lastmod>
+         <loc>https://dominictarro.github.io/prefecto/serializers/pandas/</loc>
+         <lastmod>2023-06-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://dominictarro.github.io/prefecto/serializers/functions/</loc>
-         <lastmod>2023-06-17</lastmod>
+         <loc>https://dominictarro.github.io/prefecto/serializers/polars/</loc>
+         <lastmod>2023-06-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://dominictarro.github.io/prefecto/serializers/method/</loc>
-         <lastmod>2023-06-17</lastmod>
+         <loc>https://dominictarro.github.io/prefecto/serializers/serialization/</loc>
+         <lastmod>2023-06-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
-         <loc>https://dominictarro.github.io/prefecto/serializers/pandas/methods/</loc>
-         <lastmod>2023-06-17</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://dominictarro.github.io/prefecto/serializers/pandas/pandas_serializer/</loc>
-         <lastmod>2023-06-17</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://dominictarro.github.io/prefecto/serializers/polars/methods/</loc>
-         <lastmod>2023-06-17</lastmod>
-         <changefreq>daily</changefreq>
-    </url>
-    <url>
-         <loc>https://dominictarro.github.io/prefecto/serializers/polars/polars_serializer/</loc>
-         <lastmod>2023-06-17</lastmod>
+         <loc>https://dominictarro.github.io/prefecto/testing/s3/</loc>
+         <lastmod>2023-06-19</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

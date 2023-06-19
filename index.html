@@ -46,42 +46,41 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a>
     </li>
+    <li class="toctree-l2"><a class="reference internal" href="#extras">Extras</a>
+    </li>
     </ul>
                 </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Concurrency</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="batch_task/">BatchTask</a>
-                  </li>
-              </ul>
-              <p class="caption"><span class="caption-text">Serialization</span></p>
-              <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="serializers/extended_serializer/">ExtendedSerializer</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="serializers/method/">Method</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="serializers/functions/">Functions</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="#">Pandas</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="serializers/pandas/pandas_serializer/">PandasSerializer</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="serializers/pandas/methods/">Methods</a>
-                </li>
-    </ul>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="#">Polars</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="serializers/polars/polars_serializer/">PolarsSerializer</a>
-                </li>
-                <li class="toctree-l2"><a class="reference internal" href="serializers/polars/methods/">Methods</a>
-                </li>
-    </ul>
-                  </li>
               </ul>
               <ul>
                 <li class="toctree-l1"><a class="reference internal" href="license/">License</a>
                 </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="concurrency/">Concurrency</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="filesystems/">File Systems</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="#">Serialization</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="serializers/serialization/">Serialization</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="#">Custom Serializers</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="serializers/pandas/">Pandas</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="serializers/polars/">Polars</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="#">Testing</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="testing/s3/">S3</a>
+                </li>
+    </ul>
+                  </li>
               </ul>
       </div>
     </div>
@@ -125,7 +124,7 @@
 <pre><code class="language-bash">pip install prefecto
 </code></pre>
 <p><em>Prefecto is only tested with Python 3.10 and higher. It may work with older versions, but it is not guaranteed.</em></p>
-<p>Break up <code>Task.map</code> into <a href="batch_task/#batchtask">batches</a>.</p>
+<p>Break up <code>Task.map</code> into <a href="./batch_task.md#batchtask">batches</a>.</p>
 <pre><code class="language-python">from prefect import flow, task
 from prefecto.concurrency import BatchTask
 
@@ -139,7 +138,7 @@ def flow():
     results = BatchTask(task, size=100).map(range(1000))
 
 </code></pre>
-<p>Standard serializers for <a href="serializers/pandas/methods/"><code>pandas.DataFrame</code></a> and <a href="serializers/polars/methods/"><code>polars.DataFrame</code></a>.</p>
+<p>Standard serializers for <a href="./serializers/pandas/methods.md"><code>pandas.DataFrame</code></a> and <a href="./serializers/polars/methods.md"><code>polars.DataFrame</code></a>.</p>
 <pre><code class="language-python">import polars as pl
 from prefect import flow, task
 from prefecto.serialization.polars import PolarsSerializer
@@ -159,11 +158,38 @@ def flow():
     df = csv_task(df)
     return df
 </code></pre>
+<h2 id="extras">Extras</h2>
+<p>Prefecto includes a number of extras that are not installed by default.</p>
+<table>
+<thead>
+<tr>
+<th>Extra</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pandas</code></td>
+<td>Adds support for <a href="serializers/pandas/"><code>pandas.DataFrame</code></a> serialization.</td>
+</tr>
+<tr>
+<td><code>polars</code></td>
+<td>Adds support for <a href="serializers/polars/"><code>polars.DataFrame</code></a> serialization.</td>
+</tr>
+<tr>
+<td><code>moto</code></td>
+<td>Adds support for mocking AWS's <code>boto3</code> with <code>moto</code></td>
+</tr>
+</tbody>
+</table>
+<p>Extras can be installed with</p>
+<pre><code class="language-bash">pip install prefecto[extra]
+</code></pre>
               
             </div>
           </div><footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
-        <a href="batch_task/" class="btn btn-neutral float-right" title="BatchTask">Next <span class="icon icon-circle-arrow-right"></span></a>
+        <a href="license/" class="btn btn-neutral float-right" title="License">Next <span class="icon icon-circle-arrow-right"></span></a>
     </div>
 
   <hr/>
@@ -191,7 +217,7 @@ def flow():
     
     
     
-      <span><a href="batch_task/" style="color: #fcfcfc">Next &raquo;</a></span>
+      <span><a href="license/" style="color: #fcfcfc">Next &raquo;</a></span>
     
   </span>
 </div>
@@ -210,5 +236,5 @@ def flow():
 
 <!--
 MkDocs version : 1.4.3
-Build Date UTC : 2023-06-17 22:19:39.142799+00:00
+Build Date UTC : 2023-06-19 23:16:14.924761+00:00
 -->

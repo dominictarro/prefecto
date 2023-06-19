@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://dominictarro.github.io/prefecto/testing/s3/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>S3 - Prefecto</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "S3";
+        var mkdocs_page_input_path = "testing/s3.md";
+        var mkdocs_page_url = "/prefecto/testing/s3/";
+      </script>
+    
+    <script src="../../js/jquery-3.6.0.min.js" defer></script>
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
+      <script>hljs.initHighlightingOnLoad();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Prefecto
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../license/">License</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../../concurrency/">Concurrency</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../filesystems/">File Systems</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="#">Serialization</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../serializers/serialization/">Serialization</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="#">Custom Serializers</a>
+    <ul>
+                <li class="toctree-l3"><a class="reference internal" href="../../serializers/pandas/">Pandas</a>
+                </li>
+                <li class="toctree-l3"><a class="reference internal" href="../../serializers/polars/">Polars</a>
+                </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Testing</a>
+    <ul class="current">
+                <li class="toctree-l2 current"><a class="reference internal current" href="./">S3</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#mock_bucket">mock_bucket</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#src.prefecto.testing.s3.mock_bucket">src.prefecto.testing.s3.mock_bucket</a>
+    </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Prefecto</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
+          <li>Reference &raquo;</li>
+          <li>Testing &raquo;</li>
+      <li>S3</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/dominictarro/prefecto/edit/master/docs/testing/s3.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="s3">S3</h1>
+<h2 id="mock_bucket">mock_bucket</h2>
+
+
+<div class="doc doc-object doc-function">
+
+
+<a id="src.prefecto.testing.s3.mock_bucket"></a>
+  <div class="doc doc-contents first">
+  
+      <p>Creates a mock S3 bucket with <code>moto</code>. If given an export path, the mock bucket
+will export its contents during teardown.</p>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b>bucket_name</b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>The name of the bucket.</p>
+              </div>
+            </li>
+            <li>
+              <b>export_path</b>
+                  (<code>str | <span title="pathlib.Path">Path</span> | None</code>)
+              –
+              <div class="doc-md-description">
+                <p>The path to export the bucket contents to.</p>
+              </div>
+            </li>
+            <li>
+              <b>keys</b>
+                  (<code>list[str] | None</code>)
+              –
+              <div class="doc-md-description">
+                <p>The keys to export. If None, all keys will be exported.</p>
+              </div>
+            </li>
+            <li>
+              <b>processes</b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>The number of threads to use for exporting. Defaults to 3.</p>
+              </div>
+            </li>
+            <li>
+              <b>chunksize</b>
+                  (<code>int</code>)
+              –
+              <div class="doc-md-description">
+                <p>The chunksize to use for exporting. Defaults to 5.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Yields:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="typing.Any">Any</span></code>
+              –
+              <div class="doc-md-description">
+                <p>The mocked bucket.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Examples:</strong></p>
+    <p>You can use the context manager to mock a bucket in your tests without exporting its contents:</p>
+<pre><code class="language-python">from prefecto.testing.s3 import mock_bucket
+
+with mock_bucket(&quot;my-bucket&quot;) as my_bucket:
+    # Do stuff with bucket
+    ...
+</code></pre>
+<p>Or you can create a fixture that exports the bucket's contents to a directory:
+Useful for auditing folder structures and file contents after local tests.</p>
+<pre><code class="language-python">from prefecto.testing.s3 import mock_bucket
+
+with mock_bucket(&quot;my-bucket&quot;, export_path=&quot;path/to/export/dir&quot;) as my_bucket:
+    my_bucket.put_object(Key=&quot;test-key-1.txt&quot;, Body=b&quot;test value 1&quot;)
+    my_bucket.put_object(Key=&quot;subfolder/test-key-2.txt&quot;, Body=b&quot;test value 2&quot;)
+</code></pre>
+<pre><code class="language-text">path/
+└── to/
+    └── export/
+        └── dir/
+            └── my-bucket/
+                |── test-key-1.txt
+                └── subfolder/
+                    └── test-key-2.txt
+</code></pre>
+
+  </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../serializers/polars/" class="btn btn-neutral float-left" title="Polars"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/dominictarro/prefecto" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../../serializers/polars/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script>var base_url = '../..';</script>
+    <script src="../../js/theme_extra.js" defer></script>
+    <script src="../../js/theme.js" defer></script>
+      <script src="../../search/main.js" defer></script>
+    <script defer>
+        window.onload = function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        };
+    </script>
+
+</body>
+</html>
