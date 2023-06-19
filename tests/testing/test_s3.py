@@ -1,70 +1,81 @@
 """
 Tests the `s3` testing fixtures module.
 """
-import contextlib
 import tempfile
 from pathlib import Path
+from typing import Any
 
 import pytest
-from _pytest.fixtures import SubRequest
 
-from prefecto.testing.s3 import mock_bucket_factory
-
-
-@pytest.fixture(scope="module")
-def tempdir():
-    """Creates a temporary directory."""
-    with tempfile.TemporaryDirectory() as tempdir:
-        yield Path(tempdir)
-
-
-@pytest.fixture
-def export_bucket_manager(request: SubRequest, tempdir):
-    """A fixture that returns a context manager to create a mock S3 bucket and export
-    contents upon exit.
-
-    Args:
-        request (SubRequest): The pytest request object. Used to access the `param`.
-        tempdir: The tempdir fixture.
-
-    `request.param` is a tuple of the following:
-
-    - request.param[0] (str): The name of the bucket (bucket_name).
-    - request.param[1] (list[str] | None): The keys to export (keys).
-    - request.param[2] (Any): A flag to use None as the export directory. Causes
-        no objects to be exported from the bucket. If empty, bucket uses the
-        tempdir fixture.
-
-    """
-    bucket_name = request.param[0]
-    keys = request.param[1]
-    export_path = tempdir if len(request.param) < 3 else None
-
-    return contextlib.contextmanager(
-        mock_bucket_factory(bucket_name=bucket_name, export_path=export_path, keys=keys)
-    )()
+from prefecto.testing.s3 import mock_bucket
 
 
 @pytest.mark.parametrize(
-    ["export_bucket_manager", "expected_paths"],
+    "files, bucket_name, keys, export_path, expected_paths, unexpected_paths",
     [
-        # passing export_bucket_manager parameters as a tuple
-        [("test-bucket", ["test-key-1", "test-key-2"], None), []],  # no export
+        # no export
         [
-            ("test-bucket", None),
-            ["test-bucket/test-key-1", "test-bucket/test-key-2"],
-        ],  # export all
-        [("test-bucket", ["test-key-1"]), ["test-bucket/test-key-1"]],  # export one
-        [("test-bucket", ["test-key-2"]), ["test-bucket/test-key-2"]],  # export one
+            ["test-key-1", "subfolder/test-key-2"],
+            "test-bucket",
+            ["test-key-1", "subfolder/test-key-2"],
+            None,
+            [],
+            ["test-bucket/test-key-1", "test-bucket/subfolder/test-key-2"],
+        ],
+        # export all
+        [
+            ["test-key-1", "subfolder/test-key-2"],
+            "test-bucket-2",
+            None,
+            "tempdir",
+            ["test-bucket-2/test-key-1", "test-bucket-2/subfolder/test-key-2"],
+            [],
+        ],
+        # export select
+        [
+            ["test-key-1", "subfolder/test-key-2"],
+            "test-bucket-3",
+            ["test-key-1"],
+            "tempdir",
+            ["test-bucket-3/test-key-1"],
+            ["test-bucket-3/subfolder/test-key-2"],
+        ],
     ],
-    indirect=["export_bucket_manager"],
 )
-def test_mock_bucket_export(export_bucket_manager, expected_paths: list[str], tempdir):
-    """Tests the `make_mock_bucket_fixture` fixture."""
-    with export_bucket_manager as bucket:
-        bucket.put_object(Key="test-key-1", Body=b"test value 1")
-        bucket.put_object(Key="test-key-2", Body=b"test value 2")
+def test_mock_bucket_export(
+    files: list[str],
+    bucket_name: str,
+    keys: list[str] | None,
+    export_path: Any | None,
+    expected_paths: list[str],
+    unexpected_paths: list[str],
+):
+    """Tests the `mock_bucket` export behavior.
 
-    for path in expected_paths:
-        path = tempdir / path
-        assert path.is_file()
+    Args:
+        files (list[str]): The files to put in the bucket.
+        bucket_name (str): The name of the bucket.
+        keys (list[str]): The keys to export.
+        export_path (str | Path | None): The path to export the bucket contents to.
+        expected_paths (list[str]): The expected paths of the exported files.
+        unexpected_paths (list[str]): The unexpected paths of the exported files.
+    """
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmpdir = Path(tmpdir)
+
+        if export_path is not None:
+            export_path = tmpdir
+
+        with mock_bucket(bucket_name, export_path=export_path, keys=keys) as bucket:
+            for file in files:
+                bucket.put_object(Key=file, Body=b"test value")
+
+        # check that the expected files were exported
+        for path in expected_paths:
+            path = tmpdir / path
+            assert path.is_file()
+
+        # check that unexpected files were not exported
+        for path in unexpected_paths:
+            path = tmpdir / path
+            assert not path.is_file()
