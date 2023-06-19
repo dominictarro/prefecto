@@ -34,6 +34,5 @@ polars = "*"
 xlsxwriter = "*"
 xlsx2csv = "*"
 
-[pytest]
-pytest = "*"
+[moto]
 moto = {extras = ["s3"], version = "*"}
