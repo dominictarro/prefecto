@@ -1,5 +1,5 @@
 """
-Tools to improve Prefect concurrently.
+Tools to improve Prefect concurrency.
 
 """
 from __future__ import annotations

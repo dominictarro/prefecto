@@ -4,23 +4,20 @@ repo_url: https://github.com/dominictarro/prefecto
 theme: readthedocs
 
 nav:
-  - Home: index.md
-  - "Concurrency":
-    - batch_task.md
-  - "File Systems": filesystems.md
-  - "Serialization":
-    - serializers/extended_serializer.md
-    - serializers/method.md
-    - serializers/functions.md
-    - "Pandas":
-      - serializers/pandas/pandas_serializer.md
-      - serializers/pandas/methods.md
-    - "Polars":
-      - serializers/polars/polars_serializer.md
-      - serializers/polars/methods.md
-  - "Testing":
-    - testing/s3.md
+  - "Home": index.md
   - "License": license.md
+  - "Reference":
+    - "Concurrency": concurrency.md
+    - "File Systems": filesystems.md
+    - "Serialization":
+      - serializers/extended_serializer.md
+      - serializers/method.md
+      - serializers/functions.md
+      - "Custom Serializers":
+        - "Pandas": serializers/pandas.md
+        - "Polars": serializers/polars.md
+    - "Testing":
+      - testing/s3.md
 
 plugins: 
   - search:
