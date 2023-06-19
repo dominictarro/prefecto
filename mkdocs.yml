@@ -10,9 +10,7 @@ nav:
     - "Concurrency": concurrency.md
     - "File Systems": filesystems.md
     - "Serialization":
-      - serializers/extended_serializer.md
-      - serializers/method.md
-      - serializers/functions.md
+      - serializers/serialization.md
       - "Custom Serializers":
         - "Pandas": serializers/pandas.md
         - "Polars": serializers/polars.md
