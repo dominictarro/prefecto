@@ -50,6 +50,7 @@ packages = pipenv_to_requirements(pipfile["packages"])
 dev_packages = pipenv_to_requirements(pipfile["dev-packages"])
 pandas_packages = pipenv_to_requirements(pipfile["pandas"])
 polars_packages = pipenv_to_requirements(pipfile["polars"])
+moto_packages = pipenv_to_requirements(pipfile["moto"])
 
 setup(
     # Package metadata
@@ -78,6 +79,7 @@ setup(
         "dev": dev_packages,
         "pandas": pandas_packages,
         "polars": polars_packages,
+        "moto": moto_packages,
     },
     classifiers=[
         "Natural Language :: English",

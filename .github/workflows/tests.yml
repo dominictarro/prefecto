@@ -25,7 +25,7 @@ jobs:
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install --upgrade --upgrade-strategy eager -e ".[dev,pandas,polars]"
+          python -m pip install --upgrade --upgrade-strategy eager -e ".[dev,pandas,polars,moto]"
 
       - name: Run tests
         env:
