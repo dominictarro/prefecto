@@ -171,6 +171,14 @@ will export its contents during teardown.</p>
                 <p>The chunksize to use for exporting. Defaults to 5.</p>
               </div>
             </li>
+            <li>
+              <b>activate_moto</b>
+                  (<code>bool</code>)
+              –
+              <div class="doc-md-description">
+                <p>Whether to activate the moto mock environment. Defaults to True.</p>
+              </div>
+            </li>
         </ul>
       </td>
     </tr>
@@ -222,6 +230,24 @@ with mock_bucket(&quot;my-bucket&quot;, export_path=&quot;path/to/export/dir&quo
                 |── test-key-1.txt
                 └── subfolder/
                     └── test-key-2.txt
+</code></pre>
+<p>You can deactivate moto's mock environment by setting <code>activate_moto=False</code>. This is useful
+for nesting mock buckets or mocking multiple buckets in the same context.</p>
+<pre><code class="language-python">from prefecto.testing.s3 import mock_bucket
+
+with mock_bucket(&quot;my-bucket&quot;, export_path=&quot;path/to/export/dir&quot;) as my_bucket:
+    my_bucket.put_object(Key=&quot;test-key-1.txt&quot;, Body=b&quot;test value 1&quot;)
+    with mock_bucket(&quot;my-bucket-2&quot;, export_path=&quot;path/to/export/dir&quot;, activate_moto=False) as my_bucket_2:
+        my_bucket_2.put_object(Key=&quot;test-key-2.txt&quot;, Body=b&quot;test value 2&quot;)
+</code></pre>
+<pre><code class="language-text">path/
+└── to/
+    └── export/
+        └── dir/
+            ├── my-bucket/
+            |   └── test-key-1.txt
+            └── my-bucket-2/
+                └── test-key-2.txt
 </code></pre>
 
   </div>
