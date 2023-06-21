@@ -81,3 +81,19 @@ def test_mock_bucket_export(
         for path in unexpected_paths:
             path = tmpdir / path
             assert not path.is_file()
+
+
+def test_nested_mock_bucket_export():
+    """Tests the `mock_bucket` export behavior when nested."""
+    with tempfile.TemporaryDirectory() as tmpdir:
+        tmpdir = Path(tmpdir)
+
+        with mock_bucket("test-bucket", export_path=tmpdir) as bucket:
+            bucket.put_object(Key="test-key-1", Body=b"test value")
+            with mock_bucket(
+                "test-bucket-2", export_path=tmpdir, activate_moto=False
+            ) as bucket_2:
+                bucket_2.put_object(Key="test-key-2", Body=b"test value")
+
+        assert (tmpdir / "test-bucket/test-key-1").is_file()
+        assert (tmpdir / "test-bucket-2/test-key-2").is_file()
