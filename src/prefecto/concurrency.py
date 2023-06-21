@@ -89,7 +89,7 @@ class BatchTask:
         if length % self.size != 0:
             batch = {p: [] for p in parameters}
             for p in parameters:
-                batch[p] = params[p][(i + 1) * self.size :]
+                batch[p] = params[p][(length // self.size) * self.size :]
             batches.append(batch)
 
         return batches
