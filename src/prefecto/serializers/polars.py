@@ -73,7 +73,7 @@ class PolarsSerializer(ExtendedSerializer):
 
     Args:
         method (str, optional): The method to use for reading and writing.
-            Must be a registered `Method`. Defaults to "polars.tsv".
+            Must be a registered `Method`. Defaults to "polars.parquet".
         read_kwargs (dict[str, Any], optional): Keyword arguments for the read
             method. Overrides default arguments for the method.
         write_kwargs (dict[str, Any], optional): Keyword arguments for the
