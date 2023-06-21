@@ -171,14 +171,11 @@ class BatchTask:
             futures = self.task.map(**batch)
             results.extend(futures)
             # Poll futures to ensure they are not active.
-            is_processing: bool = False
+            is_processing: bool = True
             while is_processing:
-                for f in futures:
-                    if not states.is_terminal(f.get_state()):
-                        # If any future is still processing, break and poll again.
-                        is_processing = True
-                        break
-                else:
+                # If any future is still processing, loop and poll again.
+                # If all futures are terminal, break while loop and continue
+                if all(states.is_terminal(f.get_state()) for f in futures):
                     is_processing = False
 
         # Map the last batch
