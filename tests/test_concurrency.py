@@ -4,6 +4,7 @@ Unit tests for the `concurrency` module.
 """
 from __future__ import annotations
 
+import pytest
 from prefect import flow, task
 
 from prefecto.concurrency import BatchTask
@@ -23,7 +24,15 @@ class TestBatchTask:
         batches = BatchTask(add, 3)._make_batches(a=[1, 2, 3, 4, 5], b=[2, 3, 4, 5, 6])
         assert batches == [{"a": [1, 2, 3], "b": [2, 3, 4]}, {"a": [4, 5], "b": [5, 6]}]
 
-    def test_map(self, harness):
+    @pytest.mark.parametrize(
+        "a,b,expectation",
+        [
+            ([1, 2, 3, 4, 5], [2, 3, 4, 5, 6], [3, 5, 7, 9, 11]),
+            ([1, 2], [2, 3], [3, 5]),
+            ([], [], []),
+        ],
+    )
+    def test_map(self, a: list[int], b: list[int], expectation: list[int], harness):
         """Test `BatchTask.map`."""
 
         @task
@@ -34,8 +43,8 @@ class TestBatchTask:
         @flow
         def test() -> list[int]:
             """Test flow."""
-            futures = BatchTask(add, 3).map([1, 2, 3, 4, 5], [2, 3, 4, 5, 6])
+            futures = BatchTask(add, 3).map(a, b)
             return realize(futures)
 
         result = test()
-        assert result == [3, 5, 7, 9, 11]
+        assert result == expectation
