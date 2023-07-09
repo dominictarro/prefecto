@@ -79,6 +79,7 @@ class BatchTask:
 
         batches = []
 
+        i = 0
         for i in range(length // self.size):
             batch = {p: [] for p in parameters}
             for p in parameters:
@@ -163,6 +164,8 @@ class BatchTask:
         Returns:
             A list of futures for each batch.
         """
+        if len(batches) == 0:
+            return []
         logger = logging.get_prefect_or_default_logger()
         results: list[PrefectFuture] = []
         for i, batch in enumerate(batches[:-1]):
