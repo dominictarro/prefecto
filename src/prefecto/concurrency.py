@@ -6,6 +6,7 @@ from __future__ import annotations
 
 from typing import Any, TypeVar
 
+from prefect import unmapped
 from prefect.futures import PrefectFuture
 from prefect.tasks import Task
 from prefect.utilities.callables import get_call_parameters
@@ -71,7 +72,7 @@ class BatchTask:
         # Assure all of equal length
         if len(parameters) > 1:
             for k in parameters[1:]:
-                if not len(params[k]) == length:
+                if not isinstance(params[k], unmapped) and not len(params[k]) == length:
                     raise ValueError(
                         f"Expected all iterables to be of length {length} like "
                         f"'{parameters[0]}'. '{k}' is length {len(params[k])}."
@@ -83,14 +84,24 @@ class BatchTask:
         for i in range(length // self.size):
             batch = {p: [] for p in parameters}
             for p in parameters:
-                batch[p] = params[p][i * self.size : (i + 1) * self.size]
+                if isinstance(params[p], unmapped):
+                    # Turn unmapped argument into an appropriately
+                    # sized tuple of the same argument repeated
+                    batch[p] = params[p] * self.size
+                else:
+                    batch[p] = params[p][i * self.size : (i + 1) * self.size]
             batches.append(batch)
 
         # Add the remainder if there is one
         if length % self.size != 0:
             batch = {p: [] for p in parameters}
             for p in parameters:
-                batch[p] = params[p][(length // self.size) * self.size :]
+                if isinstance(params[p], unmapped):
+                    # Turn unmapped argument into an appropriately
+                    # sized tuple of the same argument repeated
+                    batch[p] = params[p] * length
+                else:
+                    batch[p] = params[p][(length // self.size) * self.size :]
             batches.append(batch)
 
         return batches
