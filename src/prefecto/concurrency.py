@@ -19,6 +19,9 @@ R = TypeVar("R")  # The return type of the user's function
 P = ParamSpec("P")  # The parameters of the task
 P_i = ParamSpec("P_i")  # The type of each parameter
 
+MapArgument = list[P_i] | unmapped[P_i]
+Batch = dict[str, MapArgument]
+
 
 class BatchTask:
     """Wraps a `Task` to perform `Task.map` in batches.
@@ -34,14 +37,13 @@ class BatchTask:
         self.task: Task = task
         self.size: int = size
 
-    def _make_batches(
-        self, **params: list[P_i] | unmapped[P_i]
-    ) -> list[dict[str, list[P_i] | unmapped[P_i]]]:
+    def _make_batches(self, **params: MapArgument) -> list[Batch]:
         """Create batches of arguments to pass to the `Task.map` calls.
 
         Args:
-            **params (list[P_i] | unmapped[P_i]): Keyword arguments where each value is an iterable of
-            equal length. Should be at least one keyword argument.
+            **params (MapArgument): Keyword arguments where each value is an
+            iterable of equal length or an `unmapped` object. Should be at least
+            one non-`unmapped` argument.
 
         Returns:
             (list[dict[str, list[P_i] | unmapped[P_i]]]): A list of dictionaries where each
@@ -115,7 +117,7 @@ class BatchTask:
 
         return batches
 
-    def map(self, *args, **kwds) -> list[PrefectFuture]:
+    def map(self, *args: MapArgument, **kwds: MapArgument) -> list[PrefectFuture]:
         """Perform a `Task.map` operation in batches of the keyword arguments. The
         arguments must be iterables of equal length.
 
@@ -174,11 +176,11 @@ class BatchTask:
 
         return self._map(batches)
 
-    def _map(self, batches: list[dict[str, list[Any]]]) -> list[PrefectFuture]:
+    def _map(self, batches: list[Batch]) -> list[PrefectFuture]:
         """Applies `Task.map` to each batch.
 
         Args:
-            batches (list[dict[str, list[Any]]]): Batches of arguments to pass to
+            batches (list[Batch]): Batches of arguments to pass to
             `Task.map`.
 
         Returns:
