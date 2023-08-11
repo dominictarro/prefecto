@@ -17,6 +17,7 @@ from . import logging, states
 T = TypeVar("T")  # Generic type var for capturing the inner return type of async funcs
 R = TypeVar("R")  # The return type of the user's function
 P = ParamSpec("P")  # The parameters of the task
+P_i = ParamSpec("P_i")  # The type of each parameter
 
 
 class BatchTask:
@@ -33,15 +34,17 @@ class BatchTask:
         self.task: Task = task
         self.size: int = size
 
-    def _make_batches(self, **params) -> list[dict[str, list[Any]]]:
+    def _make_batches(
+        self, **params: list[P_i] | unmapped[P_i]
+    ) -> list[dict[str, list[P_i] | unmapped[P_i]]]:
         """Create batches of arguments to pass to the `Task.map` calls.
 
         Args:
-            **params : Keyword arguments where each value is an iterable of
+            **params (list[P_i] | unmapped[P_i]): Keyword arguments where each value is an iterable of
             equal length. Should be at least one keyword argument.
 
         Returns:
-            (list[dict[str, list[Any]]]): A list of dictionaries where each
+            (list[dict[str, list[P_i] | unmapped[P_i]]]): A list of dictionaries where each
             dictionary has the same keys as the provided keyword arguments.
             The values of the dictionaries are lists with lengths no greater
             than `BatchTask.size`.
@@ -67,15 +70,23 @@ class BatchTask:
             if not hasattr(params[k], "__iter__"):
                 raise ValueError(f"Expected '{k}' to be an iterable.")
 
-        length = len(params[parameters[0]])
+        # Get the first non-unmapped iterable
+        length: int
+        for j, name in enumerate(parameters):
+            if not isinstance(params[name], unmapped):
+                length = len(params[name])
+                break
+        else:
+            # Logically, at least one iterable must be provided
+            raise ValueError("Must provide at least one non-unmapped iterable.")
 
         # Assure all of equal length
-        if len(parameters) > 1:
-            for k in parameters[1:]:
+        if len(parameters[j:]) > 1:
+            for k in parameters[j + 1 :]:
                 if not isinstance(params[k], unmapped) and not len(params[k]) == length:
                     raise ValueError(
                         f"Expected all iterables to be of length {length} like "
-                        f"'{parameters[0]}'. '{k}' is length {len(params[k])}."
+                        f"'{parameters[j]}'. '{k}' is length {len(params[k])}."
                     )
 
         batches = []
@@ -85,9 +96,8 @@ class BatchTask:
             batch = {p: [] for p in parameters}
             for p in parameters:
                 if isinstance(params[p], unmapped):
-                    # Turn unmapped argument into an appropriately
-                    # sized tuple of the same argument repeated
-                    batch[p] = params[p] * self.size
+                    # Pass the unmapped argument to be handled by the task
+                    batch[p] = params[p]
                 else:
                     batch[p] = params[p][i * self.size : (i + 1) * self.size]
             batches.append(batch)
@@ -97,9 +107,8 @@ class BatchTask:
             batch = {p: [] for p in parameters}
             for p in parameters:
                 if isinstance(params[p], unmapped):
-                    # Turn unmapped argument into an appropriately
-                    # sized tuple of the same argument repeated
-                    batch[p] = params[p] * length
+                    # Pass the unmapped argument to be handled by the task
+                    batch[p] = params[p]
                 else:
                     batch[p] = params[p][(length // self.size) * self.size :]
             batches.append(batch)
