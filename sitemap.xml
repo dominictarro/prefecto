@@ -2,42 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://dominictarro.github.io/prefecto/</loc>
-         <lastmod>2023-07-09</lastmod>
+         <lastmod>2023-08-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://dominictarro.github.io/prefecto/concurrency/</loc>
-         <lastmod>2023-07-09</lastmod>
+         <lastmod>2023-08-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://dominictarro.github.io/prefecto/filesystems/</loc>
-         <lastmod>2023-07-09</lastmod>
+         <lastmod>2023-08-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://dominictarro.github.io/prefecto/license/</loc>
-         <lastmod>2023-07-09</lastmod>
+         <lastmod>2023-08-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://dominictarro.github.io/prefecto/serializers/pandas/</loc>
-         <lastmod>2023-07-09</lastmod>
+         <lastmod>2023-08-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://dominictarro.github.io/prefecto/serializers/polars/</loc>
-         <lastmod>2023-07-09</lastmod>
+         <lastmod>2023-08-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://dominictarro.github.io/prefecto/serializers/serialization/</loc>
-         <lastmod>2023-07-09</lastmod>
+         <lastmod>2023-08-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
     <url>
          <loc>https://dominictarro.github.io/prefecto/testing/s3/</loc>
-         <lastmod>2023-07-09</lastmod>
+         <lastmod>2023-08-20</lastmod>
          <changefreq>daily</changefreq>
     </url>
 </urlset>

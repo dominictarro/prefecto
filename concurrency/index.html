@@ -8,7 +8,7 @@
     <title>Concurrency - Prefecto</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
         <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
     
       <script>
@@ -18,12 +18,11 @@
         var mkdocs_page_url = "/prefecto/concurrency/";
       </script>
     
-    <script src="../js/jquery-3.6.0.min.js" defer></script>
     <!--[if lt IE 9]>
       <script src="../js/html5shiv.min.js"></script>
     <![endif]-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-      <script>hljs.initHighlightingOnLoad();</script> 
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
 </head>
 
 <body class="wy-body-for-nav" role="document">
@@ -99,7 +98,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
           <li>Reference &raquo;</li>
-      <li>Concurrency</li>
+      <li class="breadcrumb-item active">Concurrency</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/dominictarro/prefecto/edit/master/docs/concurrency.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -122,6 +121,8 @@
 
   
       <p>Wraps a <code>Task</code> to perform <code>Task.map</code> in batches.</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -155,10 +156,10 @@
   </tbody>
 </table>
 
-
   
 
   <div class="doc doc-children">
+
 
 
 
@@ -183,6 +184,8 @@
       <p>Perform a <code>Task.map</code> operation in batches of the keyword arguments. The
 arguments must be iterables of equal length.</p>
 
+
+
 <table class="field-list">
   <colgroup>
     <col class="field-name" />
@@ -195,6 +198,9 @@ arguments must be iterables of equal length.</p>
         <ul class="first simple">
             <li>
               <b>*args</b>
+                  (<code><span title="src.prefecto.concurrency.MapArgument">MapArgument</span></code>, default:
+                      <code>()</code>
+)
               –
               <div class="doc-md-description">
                 <p>Positional arguments to pass to the task.</p>
@@ -202,6 +208,9 @@ arguments must be iterables of equal length.</p>
             </li>
             <li>
               <b>**kwds</b>
+                  (<code><span title="src.prefecto.concurrency.MapArgument">MapArgument</span></code>, default:
+                      <code>{}</code>
+)
               –
               <div class="doc-md-description">
                 <p>Keyword arguments to pass to the task.</p>
@@ -212,6 +221,8 @@ arguments must be iterables of equal length.</p>
     </tr>
   </tbody>
 </table>
+
+
 <table class="field-list">
   <colgroup>
     <col class="field-name" />
@@ -234,7 +245,9 @@ arguments must be iterables of equal length.</p>
     </tr>
   </tbody>
 </table>
-<p><strong>Examples:</strong></p>
+
+
+<p><strong></strong></p>
     <pre><code class="language-python">from prefect import flow, task
 from prefecto.concurrency import BatchTask
 
@@ -320,14 +333,15 @@ print(my_flow())
     
   </span>
 </div>
-    <script>var base_url = '..';</script>
-    <script src="../js/theme_extra.js" defer></script>
-    <script src="../js/theme.js" defer></script>
-      <script src="../search/main.js" defer></script>
-    <script defer>
-        window.onload = function () {
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
             SphinxRtdTheme.Navigation.enable(true);
-        };
+        });
     </script>
 
 </body>

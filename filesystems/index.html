@@ -8,7 +8,7 @@
     <title>File Systems - Prefecto</title>
     <link rel="stylesheet" href="../css/theme.css" />
     <link rel="stylesheet" href="../css/theme_extra.css" />
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/styles/github.min.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
         <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
     
       <script>
@@ -18,12 +18,11 @@
         var mkdocs_page_url = "/prefecto/filesystems/";
       </script>
     
-    <script src="../js/jquery-3.6.0.min.js" defer></script>
     <!--[if lt IE 9]>
       <script src="../js/html5shiv.min.js"></script>
     <![endif]-->
-      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.5.0/highlight.min.js"></script>
-      <script>hljs.initHighlightingOnLoad();</script> 
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
 </head>
 
 <body class="wy-body-for-nav" role="document">
@@ -101,7 +100,7 @@
   <ul class="wy-breadcrumbs">
     <li><a href=".." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
           <li>Reference &raquo;</li>
-      <li>File Systems</li>
+      <li class="breadcrumb-item active">File Systems</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/dominictarro/prefecto/edit/master/docs/filesystems.md" class="icon icon-github"> Edit on GitHub</a>
     </li>
@@ -114,6 +113,7 @@
                 <h1 id="filesystems">Filesystems</h1>
 <p>Tools to extend Prefect file system behavior.</p>
 <h2 id="create_child">create_child</h2>
+
 
 
 <div class="doc doc-object doc-function">
@@ -131,6 +131,8 @@ is given, it will be appended to the child block's <code>_block_document_name</c
 <li>a <code>_resolve_path</code> method to resolve the path.</li>
 </ol>
 <p><code>path</code>. It must also have a <code>_resolve_path</code> method to resolve the path.</p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -152,7 +154,9 @@ is given, it will be appended to the child block's <code>_block_document_name</c
             </li>
             <li>
               <b>path</b>
-                  (<code>str | <span title="pathlib.Path">Path</span></code>)
+                  (<code>str | <span title="pathlib.Path">Path</span></code>, default:
+                      <code>None</code>
+)
               –
               <div class="doc-md-description">
                 <p>the path to the child file system</p>
@@ -160,7 +164,9 @@ is given, it will be appended to the child block's <code>_block_document_name</c
             </li>
             <li>
               <b>suffix</b>
-                  (<code>str</code>)
+                  (<code>str</code>, default:
+                      <code>None</code>
+)
               –
               <div class="doc-md-description">
                 <p>the suffix to append to the child block's</p>
@@ -171,6 +177,8 @@ is given, it will be appended to the child block's <code>_block_document_name</c
     </tr>
   </tbody>
 </table>
+
+
 <table class="field-list">
   <colgroup>
     <col class="field-name" />
@@ -193,7 +201,9 @@ is given, it will be appended to the child block's <code>_block_document_name</c
     </tr>
   </tbody>
 </table>
-<p><strong>Examples:</strong></p>
+
+
+<p><strong></strong></p>
     <p>Basic usage:</p>
 <pre><code class="language-python">from prefect.filesystems import LocalFileSystem
 from prefecto.filesystems import create_child
@@ -224,6 +234,7 @@ print(child.bucket_folder)
 </div><h2 id="task_persistence_subfolder">task_persistence_subfolder</h2>
 
 
+
 <div class="doc doc-object doc-function">
 
 
@@ -233,6 +244,8 @@ print(child.bucket_folder)
       <p>Decorator to set the <code>task.result_storage</code> attribute to a child file system of
 <code>fs</code>.</p>
 <p><em>This method does not alter the <code>result_serializer</code> or <code>persist_result</code> attributes.</em></p>
+
+
 
 <table class="field-list">
   <colgroup>
@@ -254,7 +267,9 @@ print(child.bucket_folder)
             </li>
             <li>
               <b>path</b>
-                  (<code>str</code>)
+                  (<code>str</code>, default:
+                      <code>None</code>
+)
               –
               <div class="doc-md-description">
                 <p>the path to the child file system. Defaults to None.</p>
@@ -262,7 +277,9 @@ print(child.bucket_folder)
             </li>
             <li>
               <b>suffix</b>
-                  (<code>str</code>)
+                  (<code>str</code>, default:
+                      <code>None</code>
+)
               –
               <div class="doc-md-description">
                 <p>the suffix to append to the child block's <code>_block_document_name</code>. Defaults to None.</p>
@@ -273,6 +290,8 @@ print(child.bucket_folder)
     </tr>
   </tbody>
 </table>
+
+
 <table class="field-list">
   <colgroup>
     <col class="field-name" />
@@ -294,7 +313,9 @@ print(child.bucket_folder)
     </tr>
   </tbody>
 </table>
-<p><strong>Examples:</strong></p>
+
+
+<p><strong></strong></p>
     <p>Basic usage:</p>
 <pre><code class="language-python">from prefect import task
 from prefect.filesystems import LocalFileSystem
@@ -388,14 +409,15 @@ print(persisted_task.result_storage.basepath)
     
   </span>
 </div>
-    <script>var base_url = '..';</script>
-    <script src="../js/theme_extra.js" defer></script>
-    <script src="../js/theme.js" defer></script>
-      <script src="../search/main.js" defer></script>
-    <script defer>
-        window.onload = function () {
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
             SphinxRtdTheme.Navigation.enable(true);
-        };
+        });
     </script>
 
 </body>
