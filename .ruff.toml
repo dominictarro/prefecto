@@ -1,0 +1,14 @@
+src = ["src"]
+
+# Use Ruff for sorting imports
+extend-select = ["I"]
+
+# Do not enforce line length; black does this for code and we do not care about comments / docs
+ignore = ["E501"]
+
+[per-file-ignores]
+# Do not enforce usage and import order rules in init files
+"__init__.py" = ["E402", "F401", "I"]
+
+# Allow wild imports in conftest
+"tests/conftest.py" = ["F405", "E402", "F403"]
