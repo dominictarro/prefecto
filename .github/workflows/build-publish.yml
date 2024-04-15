@@ -1,16 +1,22 @@
-name: Build & Release
+name: Build & Publish Package
 
 on:
-  push:
-    tags:
-      - "v*"
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      docs:
+        description: 'Builds and publishes docs after building and publishing the package. Default is true.'
+        required: false
+        default: 'true'
 
 jobs:
   build-release:
     name: Build Release
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
+
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -45,19 +51,18 @@ jobs:
           path: './dist'
 
       - name: Publish distribution to PyPI
-        uses: pypa/gh-action-pypi-publish@master
+        uses: pypa/gh-action-pypi-publish@release/v1
         with:
           password: ${{ secrets.PYPI_API_TOKEN }}
           verbose: true
 
   build-and-publish-docs:
     name: Build and publish docs
-    needs: [build-release, publish-release]
     runs-on: ubuntu-latest
+    if: ${{ github.event.inputs.docs == 'true' }}
 
     steps:
       - uses: actions/checkout@v3
-
       - name: Set up Python 3.10
         uses: actions/setup-python@v4
         with:
@@ -65,12 +70,12 @@ jobs:
           cache: pip
           cache-dependency-path: Pipfile
 
-      - name: Build docs
+      - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip pyOpenSSL
+          python -m pip install --upgrade pip
           python -m pip install --upgrade --upgrade-strategy eager -e ".[dev]"
           mkdocs build
-
+      
       - name: Publish docs
         uses: JamesIves/github-pages-deploy-action@v4.4.2
         with:
