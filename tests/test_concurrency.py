@@ -2,6 +2,7 @@
 Unit tests for the `concurrency` module.
 
 """
+
 from __future__ import annotations
 
 import pytest

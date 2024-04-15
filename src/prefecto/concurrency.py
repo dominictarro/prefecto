@@ -2,9 +2,10 @@
 Tools to improve Prefect concurrency.
 
 """
+
 from __future__ import annotations
 
-from typing import Any, TypeVar
+from typing import TypeVar
 
 from prefect import unmapped
 from prefect.futures import PrefectFuture
