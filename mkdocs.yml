@@ -8,16 +8,8 @@ nav:
   - "License": license.md
   - "Reference":
     - "Concurrency": concurrency.md
-    - "File Systems": filesystems.md
-    - "Serialization":
-      - serializers/serialization.md
-      - "Custom Serializers":
-        - "Pandas": serializers/pandas.md
-        - "Polars": serializers/polars.md
-    - "Testing":
-      - testing/s3.md
 
-plugins: 
+plugins:
   - search:
   - mkdocstrings:
       default_handler: python
