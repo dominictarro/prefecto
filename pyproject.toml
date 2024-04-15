@@ -1,24 +1,54 @@
 [build-system]
-requires = ["setuptools", "versioneer[toml]", "toml"]
+requires = ["setuptools", "versioneer[toml]==0.29"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "prefecto"
+dynamic = ["version"]
+description = "Tools for supporting Prefect development."
+readme = "README.md"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Dominic Tarro", email = "dtarro@oxfordeconomics.com" }
+]
+requires-python = ">=3.10"
+keywords = ["prefect", "utilities"]
+classifiers = [
+  "Natural Language :: English",
+  "Intended Audience :: Developers",
+  "Intended Audience :: System Administrators",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3 :: Only",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Software Development :: Libraries",
+]
+dependencies = [
+  "prefect>=2.10",
+]
+
+[project.urls]
+Documentation = "https://dominictarro.github.io/prefecto/"
+Repository = "https://github.com/dominictarro/prefecto"
+
+[project.optional-dependencies]
+
+[tool.interrogate]
+exclude = ["tests/", "setup.py", "versioneer.py", "src/prefecto/_version.py"]
+ignore-init-module-imports = true
+ignore-init-module = true
+ignore-init-method = true
+fail-under = 95
 
 [tool.pytest.ini_options]
 pythonpath = [
   "src"
 ]
 
-[tool.interrogate]
-ignore-init-module-imports = true
-ignore-init-module = true
-ignore-init-method = true
-fail-under = 95
-exclude = ["setup.py", "versioneer.py", "src/prefecto/_version.py"]
-
-[tool.isort]
-profile = "black"
-line_length = 88
-skip = ["setup.py", "versioneer.py", "src/prefecto/_version.py", "src/prefecto/__init__.py"]
-
-[tool.black]
-line-length = 88
-extend-exclude = ["setup.py", "versioneer.py", "src/prefecto/_version.py"]
+[tool.versioneer]
+VCS = 'git'
+style = "pep440"
+versionfile_source = "src/prefecto/_version.py"
+versionfile_build = "prefecto/_version.py"
+tag_prefix=""
+parentdir_prefix="prefecto-"
