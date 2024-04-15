@@ -13,7 +13,8 @@ from prefect.tasks import Task
 from prefect.utilities.callables import get_call_parameters
 from typing_extensions import ParamSpec
 
-from . import logging, states
+from prefecto import logging, states
+from prefecto.concurrency.kill_switch import KillSwitch
 
 T = TypeVar("T")  # Generic type var for capturing the inner return type of async funcs
 R = TypeVar("R")  # The return type of the user's function
@@ -34,9 +35,17 @@ class BatchTask:
 
     """
 
-    def __init__(self, task: Task[P, R], size: int):
+    def __init__(
+        self, task: Task[P, R], size: int, kill_switch: KillSwitch | None = None
+    ):
         self.task: Task = task
         self.size: int = size
+
+        if kill_switch is not None and not isinstance(kill_switch, KillSwitch):
+            raise TypeError(
+                f"Expected 'kill_switch' to be a subclass of 'KillSwitch', got {type(kill_switch)}."
+            )
+        self._kill_switch = kill_switch
 
     def _make_batches(self, **params: MapArgument) -> list[Batch]:
         """Create batches of arguments to pass to the `Task.map` calls.
@@ -203,6 +212,10 @@ class BatchTask:
                 # If all futures are terminal, break while loop and continue
                 if all(states.is_terminal(f.get_state()) for f in futures):
                     is_processing = False
+
+            if self._kill_switch is not None:
+                for f in futures:
+                    self._kill_switch.raise_if_triggered(f.get_state())
 
         # Map the last batch
         logger.debug(
