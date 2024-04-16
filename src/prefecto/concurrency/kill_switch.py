@@ -1,5 +1,6 @@
 """
-Kill switch logic classes for stopping the execution of a `BatchTask`.
+Kill switch logic classes for stopping the execution of a
+[`BatchTask`][src.prefecto.concurrency.batch_task.BatchTask].
 
 """
 
@@ -17,7 +18,24 @@ class KillSwitchError(Exception):
 
 
 class KillSwitch(abc.ABC):
-    """Abstract base class for a kill switch."""
+    """Abstract base class for a kill switch.
+
+    Each invocation of the `should_flip_switch` method should advance the state of the
+    kill switch and return if the kill switch should be activated. The
+    `raise_if_triggered` method should raise a `KillSwitchError` if the kill switch has
+    been activated.
+
+    ```python
+
+    class AnyFailedSwitch(KillSwitch):
+        def should_flip_switch(self, state: State) -> bool:
+            return state.is_failed() or state.is_crashed()
+
+        def raise_if_triggered(self, state: State):
+            if self.should_flip_switch(state):
+                raise KillSwitchError("Failed task detected.", self)
+    ```
+    """
 
     @abc.abstractmethod
     def should_flip_switch(self, state: State) -> bool:
@@ -39,7 +57,7 @@ class KillSwitch(abc.ABC):
 
 
 class AnyFailedSwitch(KillSwitch):
-    """A kill switch that activates if any tasks failed."""
+    """A kill switch that activates if any task fails."""
 
     def should_flip_switch(self, state: State) -> bool:
         """Check if the state is failed or crashed."""
@@ -55,7 +73,8 @@ class CountSwitch(KillSwitch):
     """A kill switch that activates after a certain number of tasks fail.
 
     Args:
-        count (int): The number of states after which to activate the kill switch.
+        count (int): The number of failed or crashed states that should trigger the kill
+            switch.
 
     """
 
@@ -83,7 +102,7 @@ class RateSwitch(KillSwitch):
 
     Args:
         min_sample (int): The minimum number of states to sample.
-        max_fail_rate (float): The maximum frequency of failed states.
+        max_fail_rate (float): The maximum frequency of failed or crashed states.
 
     """
 
@@ -95,7 +114,7 @@ class RateSwitch(KillSwitch):
 
     def should_flip_switch(self, state: State) -> bool:
         """Increment the count if the state is failed or crashed and return if the failure rate
-        exceeds the maximum tolerable rate.
+        equals or exceeds the max rate.
         """
         self._current_count += 1
         if state.is_failed() or state.is_crashed():
@@ -106,7 +125,7 @@ class RateSwitch(KillSwitch):
         )
 
     def raise_if_triggered(self, state: State):
-        """Raise a `KillSwitchError` if the failure rate exceeds the maximum tolerable rate."""
+        """Raise a `KillSwitchError` if the failure rate equals or exceeds the maximum rate."""
         if self.should_flip_switch(state):
             raise KillSwitchError(
                 f"Failure rate exceeded {self.max_fail_rate} after {self.min_sample} samples.",
