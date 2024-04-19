@@ -2,12 +2,13 @@
 Unit tests for the `concurrency` module.
 
 """
+
 from __future__ import annotations
 
 import pytest
 from prefect import flow, task, unmapped
 
-from prefecto.concurrency import BatchTask
+from prefecto.concurrency.batch_task import BatchTask
 
 
 @task
@@ -76,3 +77,35 @@ class TestBatchTask:
 
         result = test()
         assert result == expectation
+
+    def test_map_with_kill_switch(self, harness):
+        """Test `BatchTask.map` with a kill switch."""
+        from prefecto.concurrency.kill_switch import CountSwitch, KillSwitchError
+
+        @flow
+        def test() -> list[int]:
+            """Test flow."""
+            bt = BatchTask(add, 3, CountSwitch(2))
+            bt.map([1, 2, 3, 4, 5, 6, 7, 8, 9], ["x", 1, 1, "y", 1, 1, 1, 1, 1])
+
+        with pytest.raises(KillSwitchError) as exc:
+            test()
+            assert isinstance(exc.value.ks, CountSwitch)
+            assert exc.value.ks._current_count == 2
+            assert exc.value.ks._max_count == 2
+
+    def test_map_with_kill_switch_within_batch(self, harness):
+        """Test `BatchTask.map` with a kill switch."""
+        from prefecto.concurrency.kill_switch import CountSwitch, KillSwitchError
+
+        @flow
+        def test() -> list[int]:
+            """Test flow."""
+            bt = BatchTask(add, 4, CountSwitch(2))
+            bt.map([1, 2, 3, 4, 5], ["x", 1, "y", 1, 1])
+
+        with pytest.raises(KillSwitchError) as exc:
+            test()
+            assert isinstance(exc.value.ks, CountSwitch)
+            assert exc.value.ks._current_count == 2
+            assert exc.value.ks._max_count == 2

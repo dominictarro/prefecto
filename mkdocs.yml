@@ -7,17 +7,13 @@ nav:
   - "Home": index.md
   - "License": license.md
   - "Reference":
-    - "Concurrency": concurrency.md
-    - "File Systems": filesystems.md
-    - "Serialization":
-      - serializers/serialization.md
-      - "Custom Serializers":
-        - "Pandas": serializers/pandas.md
-        - "Polars": serializers/polars.md
-    - "Testing":
-      - testing/s3.md
+    - "Blocks": blocks.md
+    - "Concurrency":
+      - "Batch Task": concurrency/batch_task.md
+      - "Kill Switches": concurrency/kill_switch.md
+    - "Logging": logging.md
 
-plugins: 
+plugins:
   - search:
   - mkdocstrings:
       default_handler: python

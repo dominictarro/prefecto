@@ -1,10 +1,10 @@
 """
-Tools to improve Prefect concurrency.
-
+Module to improve Prefect concurrency operations.
 """
+
 from __future__ import annotations
 
-from typing import Any, TypeVar
+from typing import TypeVar
 
 from prefect import unmapped
 from prefect.futures import PrefectFuture
@@ -12,7 +12,8 @@ from prefect.tasks import Task
 from prefect.utilities.callables import get_call_parameters
 from typing_extensions import ParamSpec
 
-from . import logging, states
+from prefecto import logging, states
+from prefecto.concurrency.kill_switch import KillSwitch
 
 T = TypeVar("T")  # Generic type var for capturing the inner return type of async funcs
 R = TypeVar("R")  # The return type of the user's function
@@ -24,18 +25,68 @@ Batch = dict[str, MapArgument]
 
 
 class BatchTask:
-    """Wraps a `Task` to perform `Task.map` in batches.
+    """Wraps a `Task` to perform `Task.map` in batches, reducing the number of
+    concurrent tasks, mellowing Prefect API requests, and allowing for faster
+    failure detection.
 
-    Args:
+    ```python
+    from prefect import flow, task
+    from prefecto.concurrency import BatchTask
 
-        task (Task): The task to wrap.
-        size (int): The size of the batches to perform `Task.map` on.
+    @task
+    def add(a, b):
+        return a + b
+
+    @flow
+    def my_flow():
+        batch_add = BatchTask(add, 2)
+        return batch_add.map([1,2,3,4], [2,3,4,5])
+
+    ```
+
+    The `kill_switch` argument can be used to stop the execution of the task
+    after a certain condition is met.
+
+    ```python
+    from prefect import flow, task
+    from prefecto.concurrency import BatchTask, AnyFailedSwitch
+
+    @task
+    def add(a, b):
+        return a + b
+
+    @flow
+    def my_flow():
+        batch_add = BatchTask(add, 2, kill_switch=AnyFailedSwitch())
+        # This will error on the first batch and stop the execution.
+        return batch_add.map([1,2,3,4], [1,'2',3,4])
+
+    ```
+
+    See [kill switches][src.prefecto.concurrency.kill_switch] for more information.
 
     """
 
-    def __init__(self, task: Task[P, R], size: int):
+    def __init__(
+        self, task: Task[P, R], size: int, kill_switch: KillSwitch | None = None
+    ):
+        """Wrap the `task` to be executed in batches of `size`.
+
+        Args:
+
+                task (Task): The task to wrap.
+                size (int): The size of the batches to perform `Task.map` on.
+                kill_switch (KillSwitch, optional): A kill switch to stop the execution of the task
+                    after a certain condition is met.
+        """
         self.task: Task = task
         self.size: int = size
+
+        if kill_switch is not None and not isinstance(kill_switch, KillSwitch):
+            raise TypeError(
+                f"Expected 'kill_switch' to be a subclass of 'KillSwitch', got {type(kill_switch)}."
+            )
+        self._kill_switch = kill_switch
 
     def _make_batches(self, **params: MapArgument) -> list[Batch]:
         """Create batches of arguments to pass to the `Task.map` calls.
@@ -202,6 +253,10 @@ class BatchTask:
                 # If all futures are terminal, break while loop and continue
                 if all(states.is_terminal(f.get_state()) for f in futures):
                     is_processing = False
+
+            if self._kill_switch is not None:
+                for f in futures:
+                    self._kill_switch.raise_if_triggered(f.get_state())
 
         # Map the last batch
         logger.debug(
