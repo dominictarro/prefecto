@@ -1,4 +1,4 @@
-name: Build & Publish Package
+name: Build & Publish Docs
 
 on:
   release:
