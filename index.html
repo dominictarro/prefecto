@@ -45,8 +45,6 @@
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#getting-started">Getting Started</a>
     </li>
-    <li class="toctree-l2"><a class="reference internal" href="#extras">Extras</a>
-    </li>
     </ul>
                 </li>
               </ul>
@@ -56,29 +54,17 @@
               </ul>
               <p class="caption"><span class="caption-text">Reference</span></p>
               <ul>
-                  <li class="toctree-l1"><a class="reference internal" href="concurrency/">Concurrency</a>
+                  <li class="toctree-l1"><a class="reference internal" href="blocks/">Blocks</a>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="filesystems/">File Systems</a>
-                  </li>
-                  <li class="toctree-l1"><a class="reference internal" href="#">Serialization</a>
+                  <li class="toctree-l1"><a class="reference internal" href="#">Concurrency</a>
     <ul>
-                <li class="toctree-l2"><a class="reference internal" href="serializers/serialization/">Serialization</a>
+                <li class="toctree-l2"><a class="reference internal" href="concurrency/batch_task/">Batch Task</a>
                 </li>
-                <li class="toctree-l2"><a class="reference internal" href="#">Custom Serializers</a>
-    <ul>
-                <li class="toctree-l3"><a class="reference internal" href="serializers/pandas/">Pandas</a>
-                </li>
-                <li class="toctree-l3"><a class="reference internal" href="serializers/polars/">Polars</a>
-                </li>
-    </ul>
+                <li class="toctree-l2"><a class="reference internal" href="concurrency/kill_switch/">Kill Switches</a>
                 </li>
     </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="#">Testing</a>
-    <ul>
-                <li class="toctree-l2"><a class="reference internal" href="testing/s3/">S3</a>
-                </li>
-    </ul>
+                  <li class="toctree-l1"><a class="reference internal" href="logging/">Logging</a>
                   </li>
               </ul>
       </div>
@@ -94,7 +80,7 @@
       <div class="wy-nav-content">
         <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
   <ul class="wy-breadcrumbs">
-    <li><a href="." class="icon icon-home" aria-label="Docs"></a> &raquo;</li>
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
       <li class="breadcrumb-item active">Home</li>
     <li class="wy-breadcrumbs-aside">
           <a href="https://github.com/dominictarro/prefecto/edit/master/docs/index.md" class="icon icon-github"> Edit on GitHub</a>
@@ -123,66 +109,53 @@
 <pre><code class="language-bash">pip install prefecto
 </code></pre>
 <p><em>Prefecto is only tested with Python 3.10 and higher. It may work with older versions, but it is not guaranteed.</em></p>
-<p>Break up <code>Task.map</code> into <a href="./batch_task.md#batchtask">batches</a>.</p>
+<p>Break <code>Task.map</code> into smaller concurrent <a href="concurrency/batch_task/">batches</a>.</p>
 <pre><code class="language-python">from prefect import flow, task
-from prefecto.concurrency import BatchTask
+from prefecto.concurrency import BatchTask, CountSwitch
 
 @task
-def task(x):
-    print(x)
+def my_task(x):
+    if x % 100 == 0:
+        raise ValueError(f&quot;{x} is divisible by 100.&quot;)
     return x
 
 @flow
-def flow():
-    results = BatchTask(task, size=100).map(range(1000))
+def my_flow():
+    results = BatchTask(
+        my_task,
+        size=100,
+        kill_switch=CountSwitch(15),
+    ).map(range(1000))
 
 </code></pre>
-<p>Standard serializers for <a href="./serializers/pandas/methods.md"><code>pandas.DataFrame</code></a> and <a href="./serializers/polars/methods.md"><code>polars.DataFrame</code></a>.</p>
-<pre><code class="language-python">import polars as pl
-from prefect import flow, task
-from prefecto.serialization.polars import PolarsSerializer
-
-@task(serializer=PolarsSerializer(method=&quot;polars.parquet&quot;), persist_result=True, cache_result_in_memory=False)
-def parquet_task(df: pl.DataFrame) -&gt; pl.DataFrame:
-    ...
-
-@task(serializer=PolarsSerializer(method=&quot;polars.csv&quot;), persist_result=True, cache_result_in_memory=False)
-def csv_task(df: pl.DataFrame) -&gt; pl.DataFrame:
-    ...
-
-@flow
-def flow():
-    df = pl.DataFrame({&quot;a&quot;: [1, 2, 3], &quot;b&quot;: [4, 5, 6]})
-    df = parquet_task(df)
-    df = csv_task(df)
-    return df
+<p>Simply and efficiently define and load <a href="blocks/">blocks</a> for dev/test/prod environments.</p>
+<pre><code class="language-bash"># .env
+BLOCKS_PASSWORD_BLOCK=secret-password-test
 </code></pre>
-<h2 id="extras">Extras</h2>
-<p>Prefecto includes a number of extras that are not installed by default.</p>
-<table>
-<thead>
-<tr>
-<th>Extra</th>
-<th>Description</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><code>pandas</code></td>
-<td>Adds support for <a href="serializers/pandas/"><code>pandas.DataFrame</code></a> serialization.</td>
-</tr>
-<tr>
-<td><code>polars</code></td>
-<td>Adds support for <a href="serializers/polars/"><code>polars.DataFrame</code></a> serialization.</td>
-</tr>
-<tr>
-<td><code>moto</code></td>
-<td>Adds support for mocking AWS's <code>boto3</code> with <code>moto</code></td>
-</tr>
-</tbody>
-</table>
-<p>Extras can be installed with</p>
-<pre><code class="language-bash">pip install prefecto[extra]
+<pre><code class="language-python">from prefect.blocks.system import Secret
+from prefecto.blocks import lazy_load
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Blocks(BaseSettings):
+    &quot;&quot;&quot;Class for lazy loading Prefect Blocks.&quot;&quot;&quot;
+
+    model_config = SettingsConfigDict(env_prefix=&quot;BLOCKS_&quot;)
+
+    # Define the block name variables
+    password_block: str = &quot;secret-password&quot;
+
+    @property
+    @lazy_load(&quot;password_block&quot;)
+    def password(self) -&gt; Secret:
+        &quot;&quot;&quot;The password block.&quot;&quot;&quot;
+
+blocks = Blocks()
+password = blocks.password
+print(password.password_block)
+# secret-password-test
+print(password.get())
+# my-secret-test-password$123
 </code></pre>
               
             </div>
@@ -235,6 +208,6 @@ def flow():
 </html>
 
 <!--
-MkDocs version : 1.5.2
-Build Date UTC : 2023-08-20 15:36:18.750517+00:00
+MkDocs version : 1.5.3
+Build Date UTC : 2024-04-19 17:08:36.749830+00:00
 -->

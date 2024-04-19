@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://dominictarro.github.io/prefecto/concurrency/batch_task/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Batch Task - Prefecto</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Batch Task";
+        var mkdocs_page_input_path = "concurrency/batch_task.md";
+        var mkdocs_page_url = "/prefecto/concurrency/batch_task/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Prefecto
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../license/">License</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../../blocks/">Blocks</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Concurrency</a>
+    <ul class="current">
+                <li class="toctree-l2 current"><a class="reference internal current" href="./">Batch Task</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#src.prefecto.concurrency.batch_task">batch_task</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#src.prefecto.concurrency.batch_task.BatchTask">BatchTask</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#src.prefecto.concurrency.batch_task.BatchTask.__init__">__init__</a>
+    </li>
+    <li class="toctree-l4"><a class="reference internal" href="#src.prefecto.concurrency.batch_task.BatchTask.map">map</a>
+    </li>
+        </ul>
+    </li>
+    </ul>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../kill_switch/">Kill Switches</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../logging/">Logging</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Prefecto</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Reference</li>
+          <li class="breadcrumb-item">Concurrency</li>
+      <li class="breadcrumb-item active">Batch Task</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/dominictarro/prefecto/edit/master/docs/concurrency/batch_task.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="batchtask">BatchTask</h1>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="src.prefecto.concurrency.batch_task"></a>
+  <div class="doc doc-contents first">
+  
+      <p>Module to improve Prefect concurrency operations.</p>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="src.prefecto.concurrency.batch_task.BatchTask" class="doc doc-heading">
+          <code>BatchTask</code>
+
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+
+  
+      <p>Wraps a <code>Task</code> to perform <code>Task.map</code> in batches, reducing the number of
+concurrent tasks, mellowing Prefect API requests, and allowing for faster
+failure detection.</p>
+<pre><code class="language-python">from prefect import flow, task
+from prefecto.concurrency import BatchTask
+
+@task
+def add(a, b):
+    return a + b
+
+@flow
+def my_flow():
+    batch_add = BatchTask(add, 2)
+    return batch_add.map([1,2,3,4], [2,3,4,5])
+
+</code></pre>
+<p>The <code>kill_switch</code> argument can be used to stop the execution of the task
+after a certain condition is met.</p>
+<pre><code class="language-python">from prefect import flow, task
+from prefecto.concurrency import BatchTask, AnyFailedSwitch
+
+@task
+def add(a, b):
+    return a + b
+
+@flow
+def my_flow():
+    batch_add = BatchTask(add, 2, kill_switch=AnyFailedSwitch())
+    # This will error on the first batch and stop the execution.
+    return batch_add.map([1,2,3,4], [1,'2',3,4])
+
+</code></pre>
+<p>See <a class="autorefs autorefs-internal" href="../kill_switch/#src.prefecto.concurrency.kill_switch">kill switches</a> for more information.</p>
+
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="src.prefecto.concurrency.batch_task.BatchTask.__init__" class="doc doc-heading">
+          <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">kill_switch</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Wrap the <code>task</code> to be executed in batches of <code>size</code>.</p>
+<p>Args:</p>
+<pre><code>    task (Task): The task to wrap.
+    size (int): The size of the batches to perform `Task.map` on.
+    kill_switch (KillSwitch, optional): A kill switch to stop the execution of the task
+        after a certain condition is met.
+</code></pre>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h3 id="src.prefecto.concurrency.batch_task.BatchTask.map" class="doc doc-heading">
+          <code class="highlight language-python"><span class="nb">map</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span></code>
+
+</h3>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Perform a <code>Task.map</code> operation in batches of the keyword arguments. The
+arguments must be iterables of equal length.</p>
+<p>Args:</p>
+<pre><code>*args: Positional arguments to pass to the task.
+**kwds: Keyword arguments to pass to the task.
+</code></pre>
+
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+    <th class="field-name">Returns:</th>
+    <td class="field-body">
+      <ul class="first simple">
+          <li>
+                <code>list[<span title="prefect.futures.PrefectFuture">PrefectFuture</span>]</code>
+            –
+            <div class="doc-md-description">
+              <p>A list of futures for each batch.</p>
+            </div>
+          </li>
+      </ul>
+    </td>
+    </tr>
+  </tbody>
+</table>      <p>Examples:</p>
+<pre><code>```python
+from prefect import flow, task
+from prefecto.concurrency import BatchTask
+
+@task
+def add(a, b):
+    return a + b
+
+@flow
+def my_flow():
+    batch_add = BatchTask(add, 2)
+    return batch_add.map([1,2,3,4], [2,3,4,5])
+
+print(my_flow())
+```
+
+```log
+$ python my_flow.py
+01:31:51.012 | INFO    | prefect.engine - Created flow run 'beryl-moth' for flow 'test'
+01:31:52.238 | DEBUG   | Flow run 'beryl-moth' - Mapping 'add' batch 1 of 2.
+01:31:52.239 | INFO    | Flow run 'beryl-moth' - Created task run 'add-0' for task 'add'
+01:31:52.240 | INFO    | Flow run 'beryl-moth' - Submitted task run 'add-0' for execution.
+01:31:52.253 | INFO    | Flow run 'beryl-moth' - Created task run 'add-1' for task 'add'
+01:31:52.254 | INFO    | Flow run 'beryl-moth' - Submitted task run 'add-1' for execution.
+01:31:52.259 | DEBUG   | Flow run 'beryl-moth' - Mapping 'add' batch 2 of 2.
+01:31:52.258 | INFO    | Flow run 'beryl-moth' - Created task run 'add-3' for task 'add'
+01:31:52.258 | INFO    | Flow run 'beryl-moth' - Submitted task run 'add-3' for execution.
+01:31:52.260 | INFO    | Flow run 'beryl-moth' - Created task run 'add-2' for task 'add'
+01:31:52.261 | INFO    | Flow run 'beryl-moth' - Submitted task run 'add-2' for execution.
+01:31:52.675 | INFO    | Task run 'add-1' - Finished in state Completed()
+01:31:52.770 | INFO    | Task run 'add-0' - Finished in state Completed()
+01:31:52.885 | INFO    | Task run 'add-2' - Finished in state Completed()
+01:31:53.075 | INFO    | Task run 'add-3' - Finished in state Completed()
+01:31:53.979 | INFO    | Flow run 'beryl-moth' - Finished in state Completed()
+```
+
+```json
+[3, 5, 7, 9]
+```
+</code></pre>
+
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+
+</div>
+
+
+
+
+  </div>
+
+  </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../blocks/" class="btn btn-neutral float-left" title="Blocks"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../kill_switch/" class="btn btn-neutral float-right" title="Kill Switches">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/dominictarro/prefecto" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../../blocks/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../kill_switch/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

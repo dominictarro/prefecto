@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://dominictarro.github.io/prefecto/blocks/" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Blocks - Prefecto</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Blocks";
+        var mkdocs_page_input_path = "blocks.md";
+        var mkdocs_page_url = "/prefecto/blocks/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> Prefecto
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../license/">License</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Blocks</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#src.prefecto.blocks">blocks</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#src.prefecto.blocks.lazy_load">lazy_load</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#src.prefecto.blocks.load_block">load_block</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="#">Concurrency</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../concurrency/batch_task/">Batch Task</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../concurrency/kill_switch/">Kill Switches</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../logging/">Logging</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">Prefecto</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Reference</li>
+      <li class="breadcrumb-item active">Blocks</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/dominictarro/prefecto/edit/master/docs/blocks.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="blocks">Blocks</h1>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="src.prefecto.blocks"></a>
+  <div class="doc doc-contents first">
+  
+      <p>A module for lazy loading Prefect Blocks.</p>
+<p>The <code>@lazy_load</code> decorator is centered around a model to attach blocks to. Each block
+is defined with two parts: a block name and a block property. The block name is a
+string that identifies the block. The block property is a property that loads the block
+on first access. The block property should be decorated with the <code>@lazy_load</code> decorator,
+and the block's type should be specified in the property annotations.</p>
+<p>Example:</p>
+<pre><code class="language-python">from prefect.blocks.system import Secret
+from prefecto.blocks import lazy_load
+
+
+class Blocks:
+    &quot;&quot;&quot;Class for lazy loading Prefect Blocks.&quot;&quot;&quot;
+
+    # Define the block name variables
+    password_block: str = &quot;secret-password&quot;
+
+    @property
+    @lazy_load(&quot;password_block&quot;)
+    def password(self) -&gt; Secret:
+        &quot;&quot;&quot;The password block.&quot;&quot;&quot;
+
+blocks = Blocks()
+password = blocks.password
+print(password)
+# Secret(value=SecretStr('**********'))
+print(password.get())
+# my-secret-password$123
+</code></pre>
+<p>This technique is useful for preventing the blocks from loading until they are actually
+needed. This can be important during unit testing, where connections to the Prefect
+server may not exist. The alternative would be to call <code>block.load()</code> directly, which
+would load the block every time it is called and could lead to performance issues.</p>
+<p>The loader can be integrated with <code>pydantic-settings</code> to load block names from
+environment variables. This can be achieved by setting the block name variables
+as class variables with default values set to the environment variables.</p>
+<p>Example:</p>
+<pre><code class="language-python">from pydantic_settings import BaseSettings, SettingsConfigDict
+from prefect.blocks.system import Secret
+from prefecto.blocks import lazy_load
+
+
+class Blocks(BaseSettings):
+    &quot;&quot;&quot;Class for lazy loading Prefect Blocks.&quot;&quot;&quot;
+
+    model_config = SettingsConfigDict(env_prefix=&quot;BLOCKS_&quot;)
+
+    # Define the block name variables
+    password_block: str = &quot;secret-password&quot;
+
+    @property
+    @lazy_load(&quot;password_block&quot;)
+    def password(self) -&gt; Secret:
+        &quot;&quot;&quot;The password block.&quot;&quot;&quot;
+
+</code></pre>
+
+  
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="src.prefecto.blocks.lazy_load" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">lazy_load</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span></code>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Decorator for lazy loading a block.</p>
+
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>varname</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>The variable name of the block name var.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+    <th class="field-name">Returns:</th>
+    <td class="field-body">
+      <ul class="first simple">
+          <li>
+            –
+            <div class="doc-md-description">
+              <p>The decorator for the loader.</p>
+            </div>
+          </li>
+      </ul>
+    </td>
+    </tr>
+  </tbody>
+</table>      <p>Example:</p>
+<p>Specify the block name, then create a decorated property to load the block on
+first access.</p>
+<pre><code class="language-python">class MyClass:
+    block_name = &quot;block_name&quot;
+
+    @property
+    @lazy_load(&quot;block_name&quot;)
+    def block(self) -&gt; BlockType:
+        &quot;&quot;&quot;The block.&quot;&quot;&quot;
+</code></pre>
+
+  </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+
+<h2 id="src.prefecto.blocks.load_block" class="doc doc-heading">
+          <code class="highlight language-python"><span class="n">load_block</span><span class="p">(</span><span class="n">block_type</span><span class="p">,</span> <span class="n">block_name</span><span class="p">)</span></code>
+  
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-async"><code>async</code></small>
+  </span>
+
+</h2>
+
+
+  <div class="doc doc-contents ">
+  
+      <p>Load a block.</p>
+
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>block_type</code></b>
+                  (<code>type[<span title="prefect.blocks.abstract.Block">Block</span>]</code>)
+              –
+              <div class="doc-md-description">
+                <p>The block type.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>block_name</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>The block name.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+  </div>
+
+</div>
+
+
+
+  </div>
+
+  </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../license/" class="btn btn-neutral float-left" title="License"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../concurrency/batch_task/" class="btn btn-neutral float-right" title="Batch Task">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/dominictarro/prefecto" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../license/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../concurrency/batch_task/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
