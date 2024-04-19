@@ -27,16 +27,21 @@ Break `Task.map` into smaller concurrent [batches](./concurrency/batch_task.md).
 
 ```python
 from prefect import flow, task
-from prefecto.concurrency import BatchTask
+from prefecto.concurrency import BatchTask, CountSwitch
 
 @task
-def task(x):
-    print(x)
+def my_task(x):
+    if x % 100 == 0:
+        raise ValueError(f"{x} is divisible by 100.")
     return x
 
 @flow
-def flow():
-    results = BatchTask(task, size=100).map(range(1000))
+def my_flow():
+    results = BatchTask(
+        my_task,
+        size=100,
+        kill_switch=CountSwitch(15),
+    ).map(range(1000))
 
 ```
 
