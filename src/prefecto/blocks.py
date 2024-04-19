@@ -1,13 +1,11 @@
 """
 A module for lazy loading Prefect Blocks.
 
-This module provides a base class for lazy loading Prefect Blocks. The base class
-should be subclassed to define your project's blocks. Each block is defined with
-two parts: a block name and a block property. The block name is a string that
-identifies the block and can be set by environment variables. The block property
-is a property that loads the block on first access. The block property should be
-decorated with the `@lazy_load` decorator, and the block's type should be specified
-in the property annotations.
+The `@lazy_load` decorator is centered around a model to attach blocks to. Each block
+is defined with two parts: a block name and a block property. The block name is a
+string that identifies the block. The block property is a property that loads the block
+on first access. The block property should be decorated with the `@lazy_load` decorator,
+and the block's type should be specified in the property annotations.
 
 Example:
 
@@ -35,11 +33,10 @@ print(password.get())
 # my-secret-password$123
 ```
 
-This technique is useful for preventing the blocks from loading until they are
-actually needed. This can be especially important during unit testing, where
-connections to the Prefect server may not exist. The alternative would be to
-call `block.load()` directly, which would load the block every time it is
-called and could lead to performance issues.
+This technique is useful for preventing the blocks from loading until they are actually
+needed. This can be important during unit testing, where connections to the Prefect
+server may not exist. The alternative would be to call `block.load()` directly, which
+would load the block every time it is called and could lead to performance issues.
 
 The loader can be integrated with `pydantic-settings` to load block names from
 environment variables. This can be achieved by setting the block name variables

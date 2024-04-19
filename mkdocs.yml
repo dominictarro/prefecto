@@ -7,7 +7,11 @@ nav:
   - "Home": index.md
   - "License": license.md
   - "Reference":
-    - "Concurrency": concurrency.md
+    - "Blocks": blocks.md
+    - "Concurrency":
+      - "Batch Task": concurrency/batch_task.md
+      - "Kill Switches": concurrency/kill_switch.md
+    - "Logging": logging.md
 
 plugins:
   - search:

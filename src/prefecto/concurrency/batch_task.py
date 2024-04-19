@@ -1,6 +1,5 @@
 """
-Tools to improve Prefect concurrency.
-
+Module to improve Prefect concurrency operations.
 """
 
 from __future__ import annotations
@@ -26,18 +25,60 @@ Batch = dict[str, MapArgument]
 
 
 class BatchTask:
-    """Wraps a `Task` to perform `Task.map` in batches.
+    """Wraps a `Task` to perform `Task.map` in batches, reducing the number of
+    concurrent tasks, mellowing Prefect API requests, and allowing for faster
+    failure detection.
 
-    Args:
+    ```python
+    from prefect import flow, task
+    from prefecto.concurrency import BatchTask
 
-        task (Task): The task to wrap.
-        size (int): The size of the batches to perform `Task.map` on.
+    @task
+    def add(a, b):
+        return a + b
+
+    @flow
+    def my_flow():
+        batch_add = BatchTask(add, 2)
+        return batch_add.map([1,2,3,4], [2,3,4,5])
+
+    ```
+
+    The `kill_switch` argument can be used to stop the execution of the task
+    after a certain condition is met.
+
+    ```python
+    from prefect import flow, task
+    from prefecto.concurrency import BatchTask, AnyFailedSwitch
+
+    @task
+    def add(a, b):
+        return a + b
+
+    @flow
+    def my_flow():
+        batch_add = BatchTask(add, 2, kill_switch=AnyFailedSwitch())
+        # This will error on the first batch and stop the execution.
+        return batch_add.map([1,2,3,4], [1,'2',3,4])
+
+    ```
+
+    See [kill switches][src.prefecto.concurrency.kill_switch] for more information.
 
     """
 
     def __init__(
         self, task: Task[P, R], size: int, kill_switch: KillSwitch | None = None
     ):
+        """Wrap the `task` to be executed in batches of `size`.
+
+        Args:
+
+                task (Task): The task to wrap.
+                size (int): The size of the batches to perform `Task.map` on.
+                kill_switch (KillSwitch, optional): A kill switch to stop the execution of the task
+                    after a certain condition is met.
+        """
         self.task: Task = task
         self.size: int = size
 

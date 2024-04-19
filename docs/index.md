@@ -23,58 +23,58 @@ pip install prefecto
 
 *Prefecto is only tested with Python 3.10 and higher. It may work with older versions, but it is not guaranteed.*
 
-Break up `Task.map` into [batches](./batch_task.md#batchtask).
+Break `Task.map` into smaller concurrent [batches](./concurrency/batch_task.md).
 
 ```python
 from prefect import flow, task
-from prefecto.concurrency import BatchTask
+from prefecto.concurrency import BatchTask, CountSwitch
 
 @task
-def task(x):
-    print(x)
+def my_task(x):
+    if x % 100 == 0:
+        raise ValueError(f"{x} is divisible by 100.")
     return x
 
 @flow
-def flow():
-    results = BatchTask(task, size=100).map(range(1000))
+def my_flow():
+    results = BatchTask(
+        my_task,
+        size=100,
+        kill_switch=CountSwitch(15),
+    ).map(range(1000))
 
 ```
 
-Standard serializers for [`pandas.DataFrame`](./serializers/pandas/methods.md) and [`polars.DataFrame`](./serializers/polars/methods.md).
-
-```python
-import polars as pl
-from prefect import flow, task
-from prefecto.serialization.polars import PolarsSerializer
-
-@task(serializer=PolarsSerializer(method="polars.parquet"), persist_result=True, cache_result_in_memory=False)
-def parquet_task(df: pl.DataFrame) -> pl.DataFrame:
-    ...
-
-@task(serializer=PolarsSerializer(method="polars.csv"), persist_result=True, cache_result_in_memory=False)
-def csv_task(df: pl.DataFrame) -> pl.DataFrame:
-    ...
-
-@flow
-def flow():
-    df = pl.DataFrame({"a": [1, 2, 3], "b": [4, 5, 6]})
-    df = parquet_task(df)
-    df = csv_task(df)
-    return df
-```
-
-## Extras
-
-Prefecto includes a number of extras that are not installed by default.
-
-| Extra | Description |
-| --- | --- |
-| `pandas` | Adds support for [`pandas.DataFrame`](./serializers/pandas.md) serialization. |
-| `polars` | Adds support for [`polars.DataFrame`](./serializers/polars.md) serialization. |
-| `moto` | Adds support for mocking AWS's `boto3` with `moto` |
-
-Extras can be installed with
+Simply and efficiently define and load [blocks](./blocks.md) for dev/test/prod environments.
 
 ```bash
-pip install prefecto[extra]
+# .env
+BLOCKS_PASSWORD_BLOCK=secret-password-test
+```
+
+```python
+from prefect.blocks.system import Secret
+from prefecto.blocks import lazy_load
+from pydantic_settings import BaseSettings, SettingsConfigDict
+
+
+class Blocks(BaseSettings):
+    """Class for lazy loading Prefect Blocks."""
+
+    model_config = SettingsConfigDict(env_prefix="BLOCKS_")
+
+    # Define the block name variables
+    password_block: str = "secret-password"
+
+    @property
+    @lazy_load("password_block")
+    def password(self) -> Secret:
+        """The password block."""
+
+blocks = Blocks()
+password = blocks.password
+print(password.password_block)
+# secret-password-test
+print(password.get())
+# my-secret-test-password$123
 ```
