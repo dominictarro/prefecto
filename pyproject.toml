@@ -33,6 +33,10 @@ Documentation = "https://dominictarro.github.io/prefecto/"
 Repository = "https://github.com/dominictarro/prefecto"
 
 [project.optional-dependencies]
+snowflake = [
+    "coolname>=2.2.0",
+    "prefect-snowflake>=0.28.0",
+]
 
 [tool.interrogate]
 exclude = ["tests/", "setup.py", "versioneer.py", "src/prefecto/_version.py"]
