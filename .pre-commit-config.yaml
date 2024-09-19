@@ -10,9 +10,3 @@ repos:
     hooks:
       - id: black
         language_version: python3
-  - repo: https://github.com/econchick/interrogate
-    rev: 1.7.0
-    hooks:
-      - id: interrogate
-        args: [-vv]
-        pass_filenames: false
