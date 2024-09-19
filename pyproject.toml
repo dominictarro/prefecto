@@ -53,3 +53,13 @@ versionfile_source = "src/prefecto/_version.py"
 versionfile_build = "prefecto/_version.py"
 tag_prefix=""
 parentdir_prefix="prefecto-"
+
+[tool.uv]
+dev-dependencies = [
+    "mkdocs>=1.4.3",
+    "mkdocstrings-python>=1.1.2",
+    "pre-commit>=3.5.0",
+    "pytest-asyncio>=0.23.6",
+    "pytest>=7.4.3",
+    "versioneer>=0.29",
+]
