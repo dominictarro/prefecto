@@ -1,10 +1,6 @@
 """
-Extended Snowflake connector block for Prefect's Snowflake block.
-
-```python
-from prefecto.ext.snowflake import PrefectoSnowflakeConnector
-
-The extended block incorporates this logging feature:
+Extended Snowflake connector block for Prefect's Snowflake block. The extended block incorporates
+logging on cursor execution with parameter obfuscation options.
 
 ```python
 from prefecto.blocks import lazy_load
@@ -123,7 +119,7 @@ def _execute(
         ```python
         import logging
         from snowflake.connector import connect
-        from azira.utils import _execute
+        from prefecto.ext.snowflake import _execute
 
         conn = connect(...)
         logger = logging.getLogger(__name__)
@@ -275,7 +271,7 @@ def execute(
         ```python
         import logging
         from snowflake.connector import connect
-        from azira.utils import execute
+        from prefecto.ext.snowflake import execute
 
         c = connect(...).cursor()
         execute(c, "SELECT * FROM table")
@@ -425,7 +421,7 @@ class PrefectoSnowflakeCursor(_SnowflakeCursor):
             ```python
             import logging
             from snowflake.connector import connect
-            from azira.utils import execute
+            from prefecto.ext.snowflake import execute
 
             c = connect(...).cursor()
             c.execute("SELECT * FROM table")
@@ -534,7 +530,7 @@ class PrefectoSnowflakeConnector(SnowflakeConnector):
         Example:
             Get Snowflake connection with only block configuration:
             ```python
-            from prefect_snowflake import SnowflakeCredentials
+            from prefecto.ext.snowflake import PrefectoSnowflakeCredentials as SnowflakeCredentials
 
             snowflake_credentials_block = SnowflakeCredentials.load("BLOCK_NAME")
 
@@ -543,7 +539,7 @@ class PrefectoSnowflakeConnector(SnowflakeConnector):
 
             Get Snowflake connector scoped to a specified database:
             ```python
-            from prefect_snowflake import SnowflakeCredentials
+            from prefecto.ext.snowflake import PrefectoSnowflakeCredentials as SnowflakeCredentials
 
             snowflake_credentials_block = SnowflakeCredentials.load("BLOCK_NAME")
 
@@ -592,8 +588,8 @@ class PrefectoSnowflakeConnector(SnowflakeConnector):
 
         Examples:
             ```python
-            from prefect_snowflake.credentials import SnowflakeCredentials
-            from prefect_snowflake.database import SnowflakeConnector
+            from prefecto.ext.snowflake import PrefectoSnowflakeCredentials as SnowflakeCredentials
+            from prefecto.ext.snowflake import PrefectoSnowflakeConnector as SnowflakeConnector
 
             snowflake_credentials = SnowflakeCredentials(
                 account="account",
