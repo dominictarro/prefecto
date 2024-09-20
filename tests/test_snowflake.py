@@ -3,9 +3,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from prefecto.snowflake import (
+from prefecto.ext.snowflake import (
     PrefectoSnowflakeCursor,
-    QueryLogAdapter,
+    CommandLogAdapter,
     _execute,
     _obfuscate_params,
 )
@@ -27,9 +27,9 @@ def test_obfuscate_params():
     assert _obfuscate_params(params, False) == params
 
 
-def test_query_log_adapter(caplog: pytest.LogCaptureFixture):
+def test_command_log_adapter(caplog: pytest.LogCaptureFixture):
     logger = logging.getLogger("test")
-    adapter = QueryLogAdapter(logger, {"query_id": "12345"})
+    adapter = CommandLogAdapter(logger, {"command_id": "12345"})
     with caplog.at_level(logging.INFO):
         adapter.info("Test message")
         assert "[12345] " in caplog.text
@@ -51,21 +51,21 @@ def test_execute_log_level_adjustment(
             mock_cursor,
             "SELECT * FROM table",
             logger=logger,
-            query_id="12345",
+            command_id="12345",
             level=logging.DEBUG,
         )
-        assert "[12345] Beginning query." in caplog.text
+        assert "[12345] Beginning command." in caplog.text
         if execute_log_is_expected:
-            assert "[12345] Executing query:\n" + "SELECT * FROM table" in caplog.text
+            assert "[12345] Executing command:\n" + "SELECT * FROM table" in caplog.text
         else:
             assert (
-                "[12345] Executing query:\n" + "SELECT * FROM table" not in caplog.text
+                "[12345] Executing command:\n" + "SELECT * FROM table" not in caplog.text
             )
-        assert "[12345] Query executed successfully." in caplog.text
+        assert "[12345] Command executed successfully." in caplog.text
 
 
 @pytest.mark.parametrize(
-    "query, params, masked_params, expected_query_log",
+    "command, params, masked_params, expected_command_log",
     [
         (
             "SELECT * FROM table",
@@ -96,19 +96,19 @@ def test_execute_log_level_adjustment(
 def test_execute_parameter_obfuscation(
     mock_cursor,
     caplog: pytest.LogCaptureFixture,
-    query,
+    command,
     params,
     masked_params,
-    expected_query_log,
+    expected_command_log,
 ):
     logger = logging.getLogger("test")
     with caplog.at_level(logging.DEBUG):
         _execute(
             mock_cursor,
-            query,
+            command,
             kwargs=dict(params=params),
             logger=logger,
-            query_id="12345",
+            command_id="12345",
             obfuscate_params=masked_params,
         )
-        assert expected_query_log in caplog.text
+        assert expected_command_log in caplog.text

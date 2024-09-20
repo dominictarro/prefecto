@@ -2,13 +2,13 @@
 Extended Snowflake connector block for Prefect's Snowflake block.
 
 ```python
-from prefecto.snowflake import PrefectoSnowflakeConnector
+from prefecto.ext.snowflake import PrefectoSnowflakeConnector
 
 The extended block incorporates this logging feature:
 
 ```python
 from prefecto.blocks import lazy_load
-from prefecto.snowflake import PrefectoSnowflakeConnector
+from prefecto.ext.snowflake import PrefectoSnowflakeConnector
 
 
 class Blocks:
@@ -26,7 +26,7 @@ with blocks.snowflake.get_connection().cursor() as cursor:
         "SELECT * FROM table WHERE id = %(id)s AND secret = %(secret)s",
         params={"id": 123, "secret": "shhh"},
         obfuscate_params=["secret"],
-        query_id="secret-selection",
+        command_id="secret-selection",
     )
 ```
 
@@ -55,11 +55,11 @@ from snowflake.connector.file_transfer_agent import SnowflakeProgressPercentage
 __python_version__ = sys.version_info
 
 
-class QueryLogAdapter(logging.LoggerAdapter):
+class CommandLogAdapter(logging.LoggerAdapter):
     """A logging adapter that prepends the command ID to the log messages."""
 
     def process(self, msg: str, kwargs: dict[str, Any]) -> tuple[str, dict[str, Any]]:
-        return f"[{self.extra['query_id']}] {msg}", kwargs
+        return f"[{self.extra['command_id']}] {msg}", kwargs
 
 
 def _obfuscate_params(
@@ -98,7 +98,7 @@ def _execute(
     *,
     kwargs: dict[str, Any] | None = None,
     logger: logging.Logger | None = None,
-    query_id: str | None = None,
+    command_id: str | None = None,
     obfuscate_params: bool | str | list[str] = False,
     level: int | str = logging.DEBUG,
 ) -> _SnowflakeCursor | dict[str, Any] | None:
@@ -109,7 +109,7 @@ def _execute(
         command (str): The command to execute.
         kwargs (dict[str, Any] | None, optional): The kwargs to pass to the `c.execute`. Defaults to None.
         logger (logging.Logger | None): The logger to use.
-        query_id (str, optional): The ID to use in the logs. Generates a random one if not provided. Defaults to None.
+        command_id (str, optional): The ID to use in the logs. Generates a random one if not provided. Defaults to None.
         obfuscate_params (bool | str | list[str], optional): Whether to obfuscate the parameters in the logs.
             If `True`, obfuscates all parameters. If a string or list of strings, obfuscates only the specified parameters.
             Defaults to False.
@@ -176,13 +176,13 @@ def _execute(
         level_int, int
     ), f"Provided logging level {level} didn't convert to int ({level_int}, {type(level_int).__name__})"
 
-    query_id = query_id or "-".join(coolname.generate(2))
-    logger = QueryLogAdapter(
-        logger or logging.getLogger(__name__), extra={"query_id": query_id}
+    command_id = command_id or "-".join(coolname.generate(2))
+    logger = CommandLogAdapter(
+        logger or logging.getLogger(__name__), extra={"command_id": command_id}
     )
 
     # Obfuscate parameters if requested
-    formatted_query_string = command % _obfuscate_params(
+    formatted_command_string = command % _obfuscate_params(
         kwargs.get("params", {}), obfuscate_params
     )
 
@@ -190,14 +190,14 @@ def _execute(
     try:
         logger.log(
             level_int,
-            f"Executing command:\n{formatted_query_string}",
+            f"Executing command:\n{formatted_command_string}",
         )
         result = c.execute(command, **kwargs)
     except Exception as e:
         if __python_version__.major > 3 or (
             __python_version__.major == 3 and __python_version__.minor >= 11
         ):
-            e.add_note(f"Command failed\n{formatted_query_string}")
+            e.add_note(f"Command failed\n{formatted_command_string}")
         logger.error("Command failed.", exc_info=e, stack_info=True)
         raise e
     logger.info("Command executed successfully.")
@@ -230,7 +230,7 @@ def execute(
     file_stream: IO[bytes] | None = None,
     *,
     logger: logging.Logger | None = None,
-    query_id: str | None = None,
+    command_id: str | None = None,
     obfuscate_params: bool | str | list[str] = False,
     level: int | str = logging.DEBUG,
 ) -> _SnowflakeCursor | dict[str, Any] | None:
@@ -261,7 +261,7 @@ def execute(
         _force_put_overwrite (bool, optional): Whether to force PUT overwrite. Defaults to False.
         file_stream (IO[bytes] | None, optional): The file stream to use. Defaults to None.
         logger (logging.Logger | None): The logger to use.
-        query_id (str, optional): The ID to use in the logs. Generates a random one if not provided. Defaults to None.
+        command_id (str, optional): The ID to use in the logs. Generates a random one if not provided. Defaults to None.
         obfuscate_params (bool | str | list[str], optional): Whether to obfuscate the parameters in the logs.
             If `True`, obfuscates all parameters. If a string or list of strings, obfuscates only the specified parameters.
             Defaults to False.
@@ -348,7 +348,7 @@ def execute(
             "file_stream": file_stream,
         },
         logger=logger,
-        query_id=query_id,
+        command_id=command_id,
         obfuscate_params=obfuscate_params,
         level=level,
     )
@@ -381,7 +381,7 @@ class PrefectoSnowflakeCursor(_SnowflakeCursor):
         file_stream: IO[bytes] | None = None,
         *,
         logger: logging.Logger | None = None,
-        query_id: str | None = None,
+        command_id: str | None = None,
         obfuscate_params: bool | str | list[str] = False,
         level: int | str = logging.DEBUG,
     ) -> _SnowflakeCursor | dict[str, Any] | None:
@@ -411,7 +411,7 @@ class PrefectoSnowflakeCursor(_SnowflakeCursor):
             _force_put_overwrite (bool, optional): Whether to force PUT overwrite. Defaults to False.
             file_stream (IO[bytes] | None, optional): The file stream to use. Defaults to None.
             logger (logging.Logger | None): The logger to use.
-            query_id (str, optional): The ID to use in the logs. Generates a random one if not provided. Defaults to None.
+            command_id (str, optional): The ID to use in the logs. Generates a random one if not provided. Defaults to None.
             obfuscate_params (bool | str | list[str], optional): Whether to obfuscate the parameters in the logs.
                 If `True`, obfuscates all parameters. If a string or list of strings, obfuscates only the specified parameters.
                 Defaults to False.
@@ -498,7 +498,7 @@ class PrefectoSnowflakeCursor(_SnowflakeCursor):
                 "file_stream": file_stream,
             },
             logger=logger,
-            query_id=query_id,
+            command_id=command_id,
             obfuscate_params=obfuscate_params,
             level=level,
         )
