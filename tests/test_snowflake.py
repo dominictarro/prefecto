@@ -4,8 +4,8 @@ from unittest.mock import MagicMock
 import pytest
 
 from prefecto.ext.snowflake import (
-    PrefectoSnowflakeCursor,
     CommandLogAdapter,
+    PrefectoSnowflakeCursor,
     _execute,
     _obfuscate_params,
 )
@@ -59,7 +59,8 @@ def test_execute_log_level_adjustment(
             assert "[12345] Executing command:\n" + "SELECT * FROM table" in caplog.text
         else:
             assert (
-                "[12345] Executing command:\n" + "SELECT * FROM table" not in caplog.text
+                "[12345] Executing command:\n" + "SELECT * FROM table"
+                not in caplog.text
             )
         assert "[12345] Command executed successfully." in caplog.text
 
