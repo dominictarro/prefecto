@@ -190,9 +190,7 @@ def _execute(
         )
         result = c.execute(command, **kwargs)
     except Exception as e:
-        if __python_version__.major > 3 or (
-            __python_version__.major == 3 and __python_version__.minor >= 11
-        ):
+        if hasattr(e, "add_note") and callable(e.add_note):
             e.add_note(f"Command failed\n{formatted_command_string}")
         logger.error("Command failed.", exc_info=e, stack_info=True)
         raise e
