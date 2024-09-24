@@ -5,7 +5,7 @@ import pytest
 
 from prefecto.ext.snowflake import (
     CommandLogAdapter,
-    PrefectoSnowflakeCursor,
+    LogCursor,
     _execute,
     _obfuscate_params,
 )
@@ -13,7 +13,7 @@ from prefecto.ext.snowflake import (
 
 @pytest.fixture
 def mock_cursor():
-    return MagicMock(spec=PrefectoSnowflakeCursor)
+    return MagicMock(spec=LogCursor)
 
 
 def test_obfuscate_params():

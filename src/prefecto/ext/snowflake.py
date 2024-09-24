@@ -3,21 +3,10 @@ Extended Snowflake connector block for Prefect's Snowflake block. The extended b
 logging on cursor execution with parameter obfuscation options.
 
 ```python
-from prefecto.blocks import lazy_load
-from prefecto.ext.snowflake import PrefectoSnowflakeConnector
+from snowflake.connector import connect
+from prefecto.ext.snowflake import LogCursor
 
-
-class Blocks:
-    SNOWFLAKE_BLOCK_NAME: str = "snowflake-block-name"
-
-    @property
-    @lazy_load("SNOWFLAKE_BLOCK_NAME")
-    def snowflake(self) -> PrefectoSnowflakeConnector:
-        \"""Snowflake connector block.\"""
-
-blocks = Blocks()
-
-with blocks.snowflake.get_connection().cursor() as cursor:
+with connect(...).cursor(LogCursor) as cursor:
     cursor.execute(
         "SELECT * FROM table WHERE id = %(id)s AND secret = %(secret)s",
         params={"id": 123, "secret": "shhh"},
@@ -42,9 +31,6 @@ import sys
 from typing import IO, Any, Sequence
 
 import coolname
-from prefect_snowflake import SnowflakeConnector
-from pydantic import SecretBytes, SecretStr
-from snowflake.connector import SnowflakeConnection as _SnowflakeConnection
 from snowflake.connector.cursor import SnowflakeCursor as _SnowflakeCursor
 from snowflake.connector.file_transfer_agent import SnowflakeProgressPercentage
 
@@ -348,7 +334,7 @@ def execute(
     )
 
 
-class PrefectoSnowflakeCursor(_SnowflakeCursor):
+class LogCursor(_SnowflakeCursor):
     def execute(
         self,
         command: str,
@@ -419,9 +405,9 @@ class PrefectoSnowflakeCursor(_SnowflakeCursor):
             ```python
             import logging
             from snowflake.connector import connect
-            from prefecto.ext.snowflake import execute
+            from prefecto.ext.snowflake import LogCursor
 
-            c = connect(...).cursor()
+            c = connect(...).cursor(LogCursor)
             c.execute("SELECT * FROM table")
             ```
 
@@ -496,123 +482,3 @@ class PrefectoSnowflakeCursor(_SnowflakeCursor):
             obfuscate_params=obfuscate_params,
             level=level,
         )
-
-
-class PrefectoSnowflakeConnection(_SnowflakeConnection):
-
-    def cursor(self) -> PrefectoSnowflakeCursor:
-        """Creates a wrapped cursor object. Each statement will be executed in a new cursor object."""
-        return super().cursor(PrefectoSnowflakeCursor)
-
-
-class PrefectoSnowflakeConnector(SnowflakeConnector):
-
-    def _credentials_get_client(
-        self, **connect_kwargs: Any
-    ) -> PrefectoSnowflakeConnection:
-        """
-        Returns an authenticated connection that can be used to command
-        Snowflake databases.
-
-        Any additional arguments passed to this method will be used to configure
-        the SnowflakeConnection. For available parameters, please refer to the
-        [Snowflake Python connector documentation](https://docs.snowflake.com/en/user-guide/python-connector-api.html#connect).
-
-        Args:
-            **connect_kwargs: Additional arguments to pass to
-                `snowflake.connector.connect`.
-
-        Returns:
-            An authenticated Snowflake connection.
-
-        Example:
-            Get Snowflake connection with only block configuration:
-            ```python
-            from prefecto.ext.snowflake import PrefectoSnowflakeCredentials as SnowflakeCredentials
-
-            snowflake_credentials_block = SnowflakeCredentials.load("BLOCK_NAME")
-
-            connection = snowflake_credentials_block.get_client()
-            ```
-
-            Get Snowflake connector scoped to a specified database:
-            ```python
-            from prefecto.ext.snowflake import PrefectoSnowflakeCredentials as SnowflakeCredentials
-
-            snowflake_credentials_block = SnowflakeCredentials.load("BLOCK_NAME")
-
-            connection = snowflake_credentials_block.get_client(database="my_database")
-            ```
-        """  # noqa
-        connect_params = {
-            # required to track task's usage in the Snowflake Partner Network Portal
-            "application": "Prefect_Snowflake_Collection",
-            **self.credentials.model_dump(
-                exclude_unset=True, exclude={"block_type_slug"}
-            ),
-            **connect_kwargs,
-        }
-
-        for key, value in connect_params.items():
-            if isinstance(value, (SecretStr, SecretBytes)):
-                connect_params[key] = connect_params[key].get_secret_value()
-
-        # set authenticator to the actual okta_endpoint
-        if connect_params.get("authenticator") == "okta_endpoint":
-            endpoint = connect_params.pop("endpoint", None) or connect_params.pop(
-                "okta_endpoint", None
-            )  # okta_endpoint is deprecated
-            connect_params["authenticator"] = endpoint
-
-        private_der_key = self.credentials.resolve_private_key()
-        if private_der_key is not None:
-            connect_params["private_key"] = private_der_key
-            connect_params.pop("password", None)
-            connect_params.pop("private_key_passphrase", None)
-
-        return PrefectoSnowflakeConnection(**connect_params)
-
-    def get_connection(self, **connect_kwargs: Any) -> PrefectoSnowflakeConnection:
-        """
-        Returns an authenticated connection that can be
-        used to command from Snowflake databases.
-
-        Args:
-            **connect_kwargs: Additional arguments to pass to
-                `snowflake.connector.connect`.
-
-        Returns:
-            The authenticated SnowflakeConnection.
-
-        Examples:
-            ```python
-            from prefecto.ext.snowflake import PrefectoSnowflakeCredentials as SnowflakeCredentials
-            from prefecto.ext.snowflake import PrefectoSnowflakeConnector as SnowflakeConnector
-
-            snowflake_credentials = SnowflakeCredentials(
-                account="account",
-                user="user",
-                password="password",
-            )
-            snowflake_connector = SnowflakeConnector(
-                database="database",
-                warehouse="warehouse",
-                schema="schema",
-                credentials=snowflake_credentials
-            )
-            with snowflake_connector.get_connection() as connection:
-                ...
-            ```
-        """
-        if self._connection is not None:
-            return self._connection
-
-        connect_params = {
-            "database": self.database,
-            "warehouse": self.warehouse,
-            "schema": self.schema_,
-        }
-        connection = self._credentials_get_client(**connect_kwargs, **connect_params)
-        self._connection = connection
-        self.logger.info("Started a new connection to Snowflake.")
-        return connection
