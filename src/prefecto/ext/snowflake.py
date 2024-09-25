@@ -1,6 +1,5 @@
 """
-Extended Snowflake connector block for Prefect's Snowflake block. The extended block incorporates
-logging on cursor execution with parameter obfuscation options.
+Opinionated Snowflake cursor for logging Snowflake execution calls with parameter obfuscation options.
 
 ```python
 from snowflake.connector import connect
