@@ -27,6 +27,7 @@ jobs:
       - name: Install dependencies
         run: |
           uv sync --frozen --all-extras
+          uv pip install --upgrade build
 
       - name: Build a binary wheel and a source tarball
         run: |
