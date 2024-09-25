@@ -52,11 +52,11 @@
               <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../../blocks/">Blocks</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Concurrency</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Concurrency</a>
     <ul class="current">
                 <li class="toctree-l2"><a class="reference internal" href="../batch_task/">Batch Task</a>
                 </li>
-                <li class="toctree-l2 current"><a class="reference internal current" href="./">Kill Switches</a>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">Kill Switches</a>
     <ul class="current">
     <li class="toctree-l3"><a class="reference internal" href="#src.prefecto.concurrency.kill_switch">kill_switch</a>
     </li>
@@ -98,6 +98,12 @@
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../logging/">Logging</a>
                   </li>
+                  <li class="toctree-l1"><a class="reference internal" >Extras</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../ext/snowflake/">Snowflake</a>
+                </li>
+    </ul>
+                  </li>
               </ul>
       </div>
     </div>
@@ -133,12 +139,12 @@
 
 
 <a id="src.prefecto.concurrency.kill_switch"></a>
-  <div class="doc doc-contents first">
-  
-      <p>Kill switch logic classes for stopping the execution of a
+    <div class="doc doc-contents first">
+
+        <p>Kill switch logic classes for stopping the execution of a
 <a class="autorefs autorefs-internal" href="../batch_task/#src.prefecto.concurrency.batch_task.BatchTask"><code>BatchTask</code></a>.</p>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -154,18 +160,18 @@
 
 
 <h2 id="src.prefecto.concurrency.kill_switch.KillSwitch" class="doc doc-heading">
-          <code>KillSwitch</code>
+            <code>KillSwitch</code>
 
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><span title="abc.ABC">ABC</span></code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="abc.ABC">ABC</span></code></p>
 
-  
-      <p>Abstract base class for a kill switch.</p>
+
+        <p>Abstract base class for a kill switch.</p>
 <p>Each invocation of the <code>should_flip_switch</code> method should advance the state of the
 kill switch and return if the kill switch should be activated. The
 <code>raise_if_triggered</code> method should raise a <code>KillSwitchError</code> if the kill switch has
@@ -181,10 +187,9 @@ class AnyFailedSwitch(KillSwitch):
 </code></pre>
 
 
-  
+
 
   <div class="doc doc-children">
-
 
 
 
@@ -197,10 +202,9 @@ class AnyFailedSwitch(KillSwitch):
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="src.prefecto.concurrency.kill_switch.KillSwitch.raise_if_triggered" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">raise_if_triggered</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></code>
-  
+            <code class="highlight language-python"><span class="n">raise_if_triggered</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
   </span>
@@ -208,10 +212,9 @@ class AnyFailedSwitch(KillSwitch):
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Check a state and raise a <code>KillSwitchError</code> if the kill switch has been activated.</p>
+    <div class="doc doc-contents ">
 
+        <p>Check a state and raise a <code>KillSwitchError</code> if the kill switch has been activated.</p>
 
 
 <table class="field-list">
@@ -236,18 +239,16 @@ class AnyFailedSwitch(KillSwitch):
     </tr>
   </tbody>
 </table>
-  </div>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="src.prefecto.concurrency.kill_switch.KillSwitch.should_flip_switch" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">should_flip_switch</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></code>
-  
+            <code class="highlight language-python"><span class="n">should_flip_switch</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-abstractmethod"><code>abstractmethod</code></small>
   </span>
@@ -255,10 +256,9 @@ class AnyFailedSwitch(KillSwitch):
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Check if this state should flip the kill switch.</p>
+    <div class="doc doc-contents ">
 
+        <p>Check if this state should flip the kill switch.</p>
 
 
 <table class="field-list">
@@ -268,22 +268,22 @@ class AnyFailedSwitch(KillSwitch):
   </colgroup>
   <tbody valign="top">
     <tr class="field">
-    <th class="field-name">Returns:</th>
-    <td class="field-body">
-      <ul class="first simple">
-          <li>
-                <code>bool</code>
-            –
-            <div class="doc-md-description">
-              <p><code>True</code> if the kill switch should be activated, <code>False</code> otherwise.</p>
-            </div>
-          </li>
-      </ul>
-    </td>
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code>bool</code>
+              –
+              <div class="doc-md-description">
+                <p><code>True</code> if the kill switch should be activated, <code>False</code> otherwise.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
     </tr>
   </tbody>
 </table>
-  </div>
+    </div>
 
 </div>
 
@@ -291,8 +291,7 @@ class AnyFailedSwitch(KillSwitch):
 
   </div>
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -301,21 +300,21 @@ class AnyFailedSwitch(KillSwitch):
 
 
 <h2 id="src.prefecto.concurrency.kill_switch.AnyFailedSwitch" class="doc doc-heading">
-          <code>AnyFailedSwitch</code>
+            <code>AnyFailedSwitch</code>
 
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><a class="autorefs autorefs-internal" title="src.prefecto.concurrency.kill_switch.KillSwitch" href="#src.prefecto.concurrency.kill_switch.KillSwitch">KillSwitch</a></code></p>
-
-  
-      <p>A kill switch that activates if any task fails.</p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="src.prefecto.concurrency.kill_switch.KillSwitch" href="#src.prefecto.concurrency.kill_switch.KillSwitch">KillSwitch</a></code></p>
 
 
-  
+        <p>A kill switch that activates if any task fails.</p>
+
+
+
 
   <div class="doc doc-children">
 
@@ -327,41 +326,37 @@ class AnyFailedSwitch(KillSwitch):
 
 
 
-
 <div class="doc doc-object doc-function">
-
 
 
 <h3 id="src.prefecto.concurrency.kill_switch.AnyFailedSwitch.raise_if_triggered" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">raise_if_triggered</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">raise_if_triggered</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Raise a <code>KillSwitchError</code> if the state is failed or crashed.</p>
+    <div class="doc doc-contents ">
 
-  </div>
+        <p>Raise a <code>KillSwitchError</code> if the state is failed or crashed.</p>
+
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="src.prefecto.concurrency.kill_switch.AnyFailedSwitch.should_flip_switch" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">should_flip_switch</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">should_flip_switch</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Check if the state is failed or crashed.</p>
+    <div class="doc doc-contents ">
 
-  </div>
+        <p>Check if the state is failed or crashed.</p>
+
+    </div>
 
 </div>
 
@@ -369,8 +364,7 @@ class AnyFailedSwitch(KillSwitch):
 
   </div>
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -379,19 +373,18 @@ class AnyFailedSwitch(KillSwitch):
 
 
 <h2 id="src.prefecto.concurrency.kill_switch.CountSwitch" class="doc doc-heading">
-          <code>CountSwitch</code>
+            <code>CountSwitch</code>
 
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><a class="autorefs autorefs-internal" title="src.prefecto.concurrency.kill_switch.KillSwitch" href="#src.prefecto.concurrency.kill_switch.KillSwitch">KillSwitch</a></code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="src.prefecto.concurrency.kill_switch.KillSwitch" href="#src.prefecto.concurrency.kill_switch.KillSwitch">KillSwitch</a></code></p>
 
-  
-      <p>A kill switch that activates after a certain number of tasks fail.</p>
 
+        <p>A kill switch that activates after a certain number of tasks fail.</p>
 
 
 <table class="field-list">
@@ -419,7 +412,7 @@ switch.</p>
   </tbody>
 </table>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -431,42 +424,38 @@ switch.</p>
 
 
 
-
 <div class="doc doc-object doc-function">
-
 
 
 <h3 id="src.prefecto.concurrency.kill_switch.CountSwitch.raise_if_triggered" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">raise_if_triggered</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">raise_if_triggered</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Raise a <code>KillSwitchError</code> if the count exceeds the maximum.</p>
+    <div class="doc doc-contents ">
 
-  </div>
+        <p>Raise a <code>KillSwitchError</code> if the count exceeds the maximum.</p>
+
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="src.prefecto.concurrency.kill_switch.CountSwitch.should_flip_switch" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">should_flip_switch</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">should_flip_switch</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Increment the count if the state is failed or crashed and return if the count exceeds
+    <div class="doc doc-contents ">
+
+        <p>Increment the count if the state is failed or crashed and return if the count exceeds
 the maximum.</p>
 
-  </div>
+    </div>
 
 </div>
 
@@ -474,8 +463,7 @@ the maximum.</p>
 
   </div>
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -484,20 +472,19 @@ the maximum.</p>
 
 
 <h2 id="src.prefecto.concurrency.kill_switch.RateSwitch" class="doc doc-heading">
-          <code>RateSwitch</code>
+            <code>RateSwitch</code>
 
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-          <p class="doc doc-class-bases">
-            Bases: <code><a class="autorefs autorefs-internal" title="src.prefecto.concurrency.kill_switch.KillSwitch" href="#src.prefecto.concurrency.kill_switch.KillSwitch">KillSwitch</a></code></p>
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><a class="autorefs autorefs-internal" title="src.prefecto.concurrency.kill_switch.KillSwitch" href="#src.prefecto.concurrency.kill_switch.KillSwitch">KillSwitch</a></code></p>
 
-  
-      <p>A kill switch that activates after the failure rate exceeds a certain threshold.
+
+        <p>A kill switch that activates after the failure rate exceeds a certain threshold.
 Requires a minimum number of states to sample.</p>
-
 
 
 <table class="field-list">
@@ -532,7 +519,7 @@ Requires a minimum number of states to sample.</p>
   </tbody>
 </table>
 
-  
+
 
   <div class="doc doc-children">
 
@@ -544,42 +531,38 @@ Requires a minimum number of states to sample.</p>
 
 
 
-
 <div class="doc doc-object doc-function">
-
 
 
 <h3 id="src.prefecto.concurrency.kill_switch.RateSwitch.raise_if_triggered" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">raise_if_triggered</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">raise_if_triggered</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Raise a <code>KillSwitchError</code> if the failure rate equals or exceeds the maximum rate.</p>
+    <div class="doc doc-contents ">
 
-  </div>
+        <p>Raise a <code>KillSwitchError</code> if the failure rate equals or exceeds the maximum rate.</p>
+
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="src.prefecto.concurrency.kill_switch.RateSwitch.should_flip_switch" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">should_flip_switch</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">should_flip_switch</span><span class="p">(</span><span class="n">state</span><span class="p">)</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Increment the count if the state is failed or crashed and return if the failure rate
+    <div class="doc doc-contents ">
+
+        <p>Increment the count if the state is failed or crashed and return if the failure rate
 equals or exceeds the max rate.</p>
 
-  </div>
+    </div>
 
 </div>
 
@@ -587,8 +570,7 @@ equals or exceeds the max rate.</p>
 
   </div>
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -597,7 +579,7 @@ equals or exceeds the max rate.</p>
 
   </div>
 
-  </div>
+    </div>
 
 </div>
               

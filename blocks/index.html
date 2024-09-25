@@ -50,7 +50,7 @@
               </ul>
               <p class="caption"><span class="caption-text">Reference</span></p>
               <ul class="current">
-                  <li class="toctree-l1 current"><a class="reference internal current" href="./">Blocks</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Blocks</a>
     <ul class="current">
     <li class="toctree-l2"><a class="reference internal" href="#src.prefecto.blocks">blocks</a>
     </li>
@@ -60,7 +60,7 @@
     </li>
     </ul>
                   </li>
-                  <li class="toctree-l1"><a class="reference internal" href="#">Concurrency</a>
+                  <li class="toctree-l1"><a class="reference internal" >Concurrency</a>
     <ul>
                 <li class="toctree-l2"><a class="reference internal" href="../concurrency/batch_task/">Batch Task</a>
                 </li>
@@ -69,6 +69,12 @@
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../logging/">Logging</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Extras</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../ext/snowflake/">Snowflake</a>
+                </li>
+    </ul>
                   </li>
               </ul>
       </div>
@@ -104,9 +110,9 @@
 
 
 <a id="src.prefecto.blocks"></a>
-  <div class="doc doc-contents first">
-  
-      <p>A module for lazy loading Prefect Blocks.</p>
+    <div class="doc doc-contents first">
+
+        <p>A module for lazy loading Prefect Blocks.</p>
 <p>The <code>@lazy_load</code> decorator is centered around a model to attach blocks to. Each block
 is defined with two parts: a block name and a block property. The block name is a
 string that identifies the block. The block property is a property that loads the block
@@ -163,10 +169,9 @@ class Blocks(BaseSettings):
 
 </code></pre>
 
-  
+
 
   <div class="doc doc-children">
-
 
 
 
@@ -179,17 +184,15 @@ class Blocks(BaseSettings):
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="src.prefecto.blocks.lazy_load" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">lazy_load</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">lazy_load</span><span class="p">(</span><span class="n">varname</span><span class="p">)</span></code>
 
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Decorator for lazy loading a block.</p>
+    <div class="doc doc-contents ">
 
+        <p>Decorator for lazy loading a block.</p>
 
 
 <table class="field-list">
@@ -216,7 +219,6 @@ class Blocks(BaseSettings):
   </tbody>
 </table>
 
-
 <table class="field-list">
   <colgroup>
     <col class="field-name" />
@@ -224,20 +226,20 @@ class Blocks(BaseSettings):
   </colgroup>
   <tbody valign="top">
     <tr class="field">
-    <th class="field-name">Returns:</th>
-    <td class="field-body">
-      <ul class="first simple">
-          <li>
-            –
-            <div class="doc-md-description">
-              <p>The decorator for the loader.</p>
-            </div>
-          </li>
-      </ul>
-    </td>
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              –
+              <div class="doc-md-description">
+                <p>The decorator for the loader.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
     </tr>
   </tbody>
-</table>      <p>Example:</p>
+</table>        <p>Example:</p>
 <p>Specify the block name, then create a decorated property to load the block on
 first access.</p>
 <pre><code class="language-python">class MyClass:
@@ -249,18 +251,16 @@ first access.</p>
         &quot;&quot;&quot;The block.&quot;&quot;&quot;
 </code></pre>
 
-  </div>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h2 id="src.prefecto.blocks.load_block" class="doc doc-heading">
-          <code class="highlight language-python"><span class="n">load_block</span><span class="p">(</span><span class="n">block_type</span><span class="p">,</span> <span class="n">block_name</span><span class="p">)</span></code>
-  
+            <code class="highlight language-python"><span class="n">load_block</span><span class="p">(</span><span class="n">block_type</span><span class="p">,</span> <span class="n">block_name</span><span class="p">)</span></code>
+
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-async"><code>async</code></small>
   </span>
@@ -268,10 +268,9 @@ first access.</p>
 </h2>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Load a block.</p>
+    <div class="doc doc-contents ">
 
+        <p>Load a block.</p>
 
 
 <table class="field-list">
@@ -305,7 +304,7 @@ first access.</p>
     </tr>
   </tbody>
 </table>
-  </div>
+    </div>
 
 </div>
 
@@ -313,7 +312,7 @@ first access.</p>
 
   </div>
 
-  </div>
+    </div>
 
 </div>
               

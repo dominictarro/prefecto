@@ -2,32 +2,30 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://dominictarro.github.io/prefecto/</loc>
-         <lastmod>2024-04-19</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-09-25</lastmod>
     </url>
     <url>
          <loc>https://dominictarro.github.io/prefecto/blocks/</loc>
-         <lastmod>2024-04-19</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-09-25</lastmod>
     </url>
     <url>
          <loc>https://dominictarro.github.io/prefecto/license/</loc>
-         <lastmod>2024-04-19</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-09-25</lastmod>
     </url>
     <url>
          <loc>https://dominictarro.github.io/prefecto/logging/</loc>
-         <lastmod>2024-04-19</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-09-25</lastmod>
     </url>
     <url>
          <loc>https://dominictarro.github.io/prefecto/concurrency/batch_task/</loc>
-         <lastmod>2024-04-19</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-09-25</lastmod>
     </url>
     <url>
          <loc>https://dominictarro.github.io/prefecto/concurrency/kill_switch/</loc>
-         <lastmod>2024-04-19</lastmod>
-         <changefreq>daily</changefreq>
+         <lastmod>2024-09-25</lastmod>
+    </url>
+    <url>
+         <loc>https://dominictarro.github.io/prefecto/ext/snowflake/</loc>
+         <lastmod>2024-09-25</lastmod>
     </url>
 </urlset>

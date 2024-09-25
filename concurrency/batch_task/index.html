@@ -52,9 +52,9 @@
               <ul class="current">
                   <li class="toctree-l1"><a class="reference internal" href="../../blocks/">Blocks</a>
                   </li>
-                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Concurrency</a>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Concurrency</a>
     <ul class="current">
-                <li class="toctree-l2 current"><a class="reference internal current" href="./">Batch Task</a>
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">Batch Task</a>
     <ul class="current">
     <li class="toctree-l3"><a class="reference internal" href="#src.prefecto.concurrency.batch_task">batch_task</a>
     </li>
@@ -73,6 +73,12 @@
     </ul>
                   </li>
                   <li class="toctree-l1"><a class="reference internal" href="../../logging/">Logging</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Extras</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../ext/snowflake/">Snowflake</a>
+                </li>
+    </ul>
                   </li>
               </ul>
       </div>
@@ -109,11 +115,11 @@
 
 
 <a id="src.prefecto.concurrency.batch_task"></a>
-  <div class="doc doc-contents first">
-  
-      <p>Module to improve Prefect concurrency operations.</p>
+    <div class="doc doc-contents first">
 
-  
+        <p>Module to improve Prefect concurrency operations.</p>
+
+
 
   <div class="doc doc-children">
 
@@ -129,16 +135,16 @@
 
 
 <h2 id="src.prefecto.concurrency.batch_task.BatchTask" class="doc doc-heading">
-          <code>BatchTask</code>
+            <code>BatchTask</code>
 
 
 </h2>
 
 
-  <div class="doc doc-contents ">
+    <div class="doc doc-contents ">
 
-  
-      <p>Wraps a <code>Task</code> to perform <code>Task.map</code> in batches, reducing the number of
+
+        <p>Wraps a <code>Task</code> to perform <code>Task.map</code> in batches, reducing the number of
 concurrent tasks, mellowing Prefect API requests, and allowing for faster
 failure detection.</p>
 <pre><code class="language-python">from prefect import flow, task
@@ -173,7 +179,7 @@ def my_flow():
 <p>See <a class="autorefs autorefs-internal" href="../kill_switch/#src.prefecto.concurrency.kill_switch">kill switches</a> for more information.</p>
 
 
-  
+
 
   <div class="doc doc-children">
 
@@ -185,20 +191,18 @@ def my_flow():
 
 
 
-
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="src.prefecto.concurrency.batch_task.BatchTask.__init__" class="doc doc-heading">
-          <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">kill_switch</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="fm">__init__</span><span class="p">(</span><span class="n">task</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">kill_switch</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Wrap the <code>task</code> to be executed in batches of <code>size</code>.</p>
+    <div class="doc doc-contents ">
+
+        <p>Wrap the <code>task</code> to be executed in batches of <code>size</code>.</p>
 <p>Args:</p>
 <pre><code>    task (Task): The task to wrap.
     size (int): The size of the batches to perform `Task.map` on.
@@ -206,30 +210,27 @@ def my_flow():
         after a certain condition is met.
 </code></pre>
 
-  </div>
+    </div>
 
 </div>
-
 
 <div class="doc doc-object doc-function">
 
 
-
 <h3 id="src.prefecto.concurrency.batch_task.BatchTask.map" class="doc doc-heading">
-          <code class="highlight language-python"><span class="nb">map</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="nb">map</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwds</span><span class="p">)</span></code>
 
 </h3>
 
 
-  <div class="doc doc-contents ">
-  
-      <p>Perform a <code>Task.map</code> operation in batches of the keyword arguments. The
+    <div class="doc doc-contents ">
+
+        <p>Perform a <code>Task.map</code> operation in batches of the keyword arguments. The
 arguments must be iterables of equal length.</p>
 <p>Args:</p>
 <pre><code>*args: Positional arguments to pass to the task.
 **kwds: Keyword arguments to pass to the task.
 </code></pre>
-
 
 
 <table class="field-list">
@@ -239,21 +240,21 @@ arguments must be iterables of equal length.</p>
   </colgroup>
   <tbody valign="top">
     <tr class="field">
-    <th class="field-name">Returns:</th>
-    <td class="field-body">
-      <ul class="first simple">
-          <li>
-                <code>list[<span title="prefect.futures.PrefectFuture">PrefectFuture</span>]</code>
-            –
-            <div class="doc-md-description">
-              <p>A list of futures for each batch.</p>
-            </div>
-          </li>
-      </ul>
-    </td>
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code>list[<span title="prefect.futures.PrefectFuture">PrefectFuture</span>]</code>
+              –
+              <div class="doc-md-description">
+                <p>A list of futures for each batch.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
     </tr>
   </tbody>
-</table>      <p>Examples:</p>
+</table>        <p>Examples:</p>
 <pre><code>```python
 from prefect import flow, task
 from prefecto.concurrency import BatchTask
@@ -295,7 +296,7 @@ $ python my_flow.py
 ```
 </code></pre>
 
-  </div>
+    </div>
 
 </div>
 
@@ -303,8 +304,7 @@ $ python my_flow.py
 
   </div>
 
-  </div>
-
+    </div>
 
 </div>
 
@@ -313,7 +313,7 @@ $ python my_flow.py
 
   </div>
 
-  </div>
+    </div>
 
 </div>
               

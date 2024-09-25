@@ -1,0 +1,1040 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><link rel="canonical" href="https://dominictarro.github.io/prefecto/ext/snowflake/" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Snowflake - Prefecto</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+        <link href="../../assets/_mkdocstrings.css" rel="stylesheet" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Snowflake";
+        var mkdocs_page_input_path = "ext/snowflake.md";
+        var mkdocs_page_url = "/prefecto/ext/snowflake/";
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> Prefecto
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Home</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../license/">License</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Reference</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../../blocks/">Blocks</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" >Concurrency</a>
+    <ul>
+                <li class="toctree-l2"><a class="reference internal" href="../../concurrency/batch_task/">Batch Task</a>
+                </li>
+                <li class="toctree-l2"><a class="reference internal" href="../../concurrency/kill_switch/">Kill Switches</a>
+                </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../../logging/">Logging</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" >Extras</a>
+    <ul class="current">
+                <li class="toctree-l2 current"><a class="reference internal current" href="#">Snowflake</a>
+    <ul class="current">
+    <li class="toctree-l3"><a class="reference internal" href="#src.prefecto.ext.snowflake">snowflake</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#src.prefecto.ext.snowflake.CommandLogAdapter">CommandLogAdapter</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#src.prefecto.ext.snowflake.LogCursor">LogCursor</a>
+        <ul>
+    <li class="toctree-l4"><a class="reference internal" href="#src.prefecto.ext.snowflake.LogCursor.execute">execute</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#src.prefecto.ext.snowflake.execute">execute</a>
+    </li>
+    </ul>
+                </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">Prefecto</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Reference</li>
+          <li class="breadcrumb-item">Extras</li>
+      <li class="breadcrumb-item active">Snowflake</li>
+    <li class="wy-breadcrumbs-aside">
+          <a href="https://github.com/dominictarro/prefecto/edit/master/docs/ext/snowflake.md" class="icon icon-github"> Edit on GitHub</a>
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="snowflake">Snowflake</h1>
+
+
+<div class="doc doc-object doc-module">
+
+
+
+<a id="src.prefecto.ext.snowflake"></a>
+    <div class="doc doc-contents first">
+
+        <p>Opinionated Snowflake cursor for logging Snowflake execution calls with parameter obfuscation options.</p>
+<pre><code class="language-python">from snowflake.connector import connect
+from prefecto.ext.snowflake import LogCursor
+
+with connect(...).cursor(LogCursor) as cursor:
+    cursor.execute(
+        &quot;SELECT * FROM table WHERE id = %(id)s AND secret = %(secret)s&quot;,
+        params={&quot;id&quot;: 123, &quot;secret&quot;: &quot;shhh&quot;},
+        obfuscate_params=[&quot;secret&quot;],
+        command_id=&quot;secret-selection&quot;,
+    )
+</code></pre>
+<pre><code>INFO - [secret-selection] Beginning command.
+DEBUG - [secret-selection] Executing command:
+SELECT * FROM table WHERE id = 123 AND secret = ****
+INFO - [secret-selection] Command executed successfully.
+</code></pre>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="src.prefecto.ext.snowflake.CommandLogAdapter" class="doc doc-heading">
+            <code>CommandLogAdapter</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="logging.LoggerAdapter">LoggerAdapter</span></code></p>
+
+
+        <p>A logging adapter that prepends the command ID to the log messages.</p>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h2 id="src.prefecto.ext.snowflake.LogCursor" class="doc doc-heading">
+            <code>LogCursor</code>
+
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="snowflake.connector.cursor.SnowflakeCursor">SnowflakeCursor</span></code></p>
+
+
+        <p>A Snowflake cursor that logs command executions. The <code>execute</code> method has additional parameters for altering log behavior.</p>
+<p>Example:</p>
+<pre><code>```python
+from snowflake.connector import connect
+from prefecto.ext.snowflake import LogCursor
+
+c = connect(...).cursor(LogCursor)
+c: LogCursor
+c.execute("SELECT * FROM table")
+```
+
+Produces logs like
+
+```txt
+INFO - [rustic-human] Beginning command.
+DEBUG - [rustic-human] Executing command:
+SELECT * FROM table
+INFO - [rustic-human] Command executed successfully.
+```
+</code></pre>
+
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+<div class="doc doc-object doc-function">
+
+
+<h3 id="src.prefecto.ext.snowflake.LogCursor.execute" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">execute</span><span class="p">(</span><span class="n">command</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_bind_stage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_exec_async</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">_no_retry</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">_do_reset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">_put_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_put_azure_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_put_callback_output_stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">_get_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_get_azure_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_get_callback_output_stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">_show_progress_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">_statement_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_is_internal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">_describe_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">_no_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">_is_put_get</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_raise_put_get_error</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">_force_put_overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">file_stream</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">command_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">obfuscate_params</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span></code>
+
+</h3>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Executes a command on the Snowflake connection after logging it.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>command</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>The command to execute.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>params</code></b>
+                  (<code><span title="typing.Sequence">Sequence</span>[<span title="typing.Any">Any</span>] | dict[<span title="typing.Any">Any</span>, <span title="typing.Any">Any</span>] | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The parameters to pass to the <code>c.execute</code>. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_bind_stage</code></b>
+                  (<code>str | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The stage to bind. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>timeout</code></b>
+                  (<code>int | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The timeout to use. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_exec_async</code></b>
+                  (<code>bool</code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to execute asynchronously. Defaults to False.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_no_retry</code></b>
+                  (<code>bool</code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to retry on failure. Defaults to False.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_do_reset</code></b>
+                  (<code>bool</code>, default:
+                      <code>True</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to reset the connection. Defaults to True.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_put_callback</code></b>
+                  (<code><span title="snowflake.connector.file_transfer_agent.SnowflakeProgressPercentage">SnowflakeProgressPercentage</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The callback for PUT operations. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_put_azure_callback</code></b>
+                  (<code><span title="snowflake.connector.file_transfer_agent.SnowflakeProgressPercentage">SnowflakeProgressPercentage</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The callback for Azure PUT operations. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_put_callback_output_stream</code></b>
+                  (<code><span title="typing.IO">IO</span>[str]</code>, default:
+                      <code><span title="sys.stdout">stdout</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The output stream for PUT callbacks. Defaults to sys.stdout.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_get_callback</code></b>
+                  (<code><span title="snowflake.connector.file_transfer_agent.SnowflakeProgressPercentage">SnowflakeProgressPercentage</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The callback for GET operations. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_get_azure_callback</code></b>
+                  (<code><span title="snowflake.connector.file_transfer_agent.SnowflakeProgressPercentage">SnowflakeProgressPercentage</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The callback for Azure GET operations. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_get_callback_output_stream</code></b>
+                  (<code><span title="typing.IO">IO</span>[str]</code>, default:
+                      <code><span title="sys.stdout">stdout</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The output stream for GET callbacks. Defaults to sys.stdout.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_show_progress_bar</code></b>
+                  (<code>bool</code>, default:
+                      <code>True</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to show a progress bar. Defaults to True.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_statement_params</code></b>
+                  (<code>dict[str, str] | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The statement parameters. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_is_internal</code></b>
+                  (<code>bool</code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether the command is internal. Defaults to False.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_describe_only</code></b>
+                  (<code>bool</code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to describe only. Defaults to False.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_no_results</code></b>
+                  (<code>bool</code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to return no results. Defaults to False.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_is_put_get</code></b>
+                  (<code>bool | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether the command is a PUT or GET operation. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_raise_put_get_error</code></b>
+                  (<code>bool</code>, default:
+                      <code>True</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to raise an error on PUT or GET failure. Defaults to True.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_force_put_overwrite</code></b>
+                  (<code>bool</code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to force PUT overwrite. Defaults to False.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>file_stream</code></b>
+                  (<code><span title="typing.IO">IO</span>[bytes] | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The file stream to use. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>logger</code></b>
+                  (<code><span title="logging.Logger">Logger</span> | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The logger to use.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>command_id</code></b>
+                  (<code>str</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The ID to use in the logs. Generates a random one if not provided. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>obfuscate_params</code></b>
+                  (<code>bool | str | list[str]</code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to obfuscate the parameters in the logs.
+If <code>True</code>, obfuscates all parameters. If a string or list of strings, obfuscates only the specified parameters.
+Defaults to False.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>level</code></b>
+                  (<code>int | str</code>, default:
+                      <code><span title="logging.DEBUG">DEBUG</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The logging level to use. Defaults to logging.DEBUG.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="snowflake.connector.cursor.SnowflakeCursor">SnowflakeCursor</span> | dict[str, <span title="typing.Any">Any</span>] | None</code>
+              –
+              <div class="doc-md-description">
+                <p>SnowflakeCursor | dict[str, Any] | None: The result of the <code>c.execute</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>        <p>Example:</p>
+<pre><code>```python
+import logging
+from snowflake.connector import connect
+from prefecto.ext.snowflake import LogCursor
+
+c = connect(...).cursor(LogCursor)
+c.execute("SELECT * FROM table")
+```
+
+Produces logs like
+
+```txt
+INFO - [rustic-human] Beginning command.
+DEBUG - [rustic-human] Executing command:
+SELECT * FROM table
+INFO - [rustic-human] Command executed successfully.
+```
+
+And tracebacks like
+
+```txt
+ERROR - [rustic-human] Command failed.
+Traceback (most recent call last):
+...
+snowflake.connector.errors.ProgrammingError: ...
+[rustic-human] Command failed
+SELECT * FROM table
+```
+
+You can also obfuscate parameters:
+
+```python
+c.execute("SELECT * FROM table WHERE id = %(id)s", params={"id": 123}, obfuscate_params=True)
+c.execute("SELECT * FROM table WHERE id = %(id)s AND %(secret)s", params={"id": 123, "secret": "shhh"}, obfuscate_params=["secret"])
+```
+
+```txt
+INFO - [delightful-octopus] Beginning command.
+DEBUG - [delightful-octopus] Executing command:
+SELECT * FROM table WHERE id = ****
+INFO - [delightful-octopus] Command executed successfully.
+INFO - [super-athlete] Beginning command.
+DEBUG - [super-athlete] Executing command:
+SELECT * FROM table WHERE id = 123 AND secret = ****
+INFO - [super-athlete] Command executed successfully.
+```
+</code></pre>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+
+<div class="doc doc-object doc-function">
+
+
+<h2 id="src.prefecto.ext.snowflake.execute" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">execute</span><span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">command</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_bind_stage</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">timeout</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_exec_async</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">_no_retry</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">_do_reset</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">_put_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_put_azure_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_put_callback_output_stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">_get_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_get_azure_callback</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_get_callback_output_stream</span><span class="o">=</span><span class="n">sys</span><span class="o">.</span><span class="n">stdout</span><span class="p">,</span> <span class="n">_show_progress_bar</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">_statement_params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_is_internal</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">_describe_only</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">_no_results</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">_is_put_get</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">_raise_put_get_error</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">_force_put_overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">file_stream</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="o">*</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">command_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">obfuscate_params</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">level</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">)</span></code>
+
+</h2>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Executes a command on the Snowflake connection after logging it.</p>
+
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Parameters:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+              <b><code>c</code></b>
+                  (<code>SnowflakeCursor</code>)
+              –
+              <div class="doc-md-description">
+                <p>The Snowflake cursor or connection to use.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>command</code></b>
+                  (<code>str</code>)
+              –
+              <div class="doc-md-description">
+                <p>The command to execute.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>params</code></b>
+                  (<code><span title="typing.Sequence">Sequence</span>[<span title="typing.Any">Any</span>] | dict[<span title="typing.Any">Any</span>, <span title="typing.Any">Any</span>] | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The parameters to pass to the <code>c.execute</code>. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_bind_stage</code></b>
+                  (<code>str | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The stage to bind. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>timeout</code></b>
+                  (<code>int | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The timeout to use. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_exec_async</code></b>
+                  (<code>bool</code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to execute asynchronously. Defaults to False.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_no_retry</code></b>
+                  (<code>bool</code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to retry on failure. Defaults to False.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_do_reset</code></b>
+                  (<code>bool</code>, default:
+                      <code>True</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to reset the connection. Defaults to True.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_put_callback</code></b>
+                  (<code><span title="snowflake.connector.file_transfer_agent.SnowflakeProgressPercentage">SnowflakeProgressPercentage</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The callback for PUT operations. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_put_azure_callback</code></b>
+                  (<code><span title="snowflake.connector.file_transfer_agent.SnowflakeProgressPercentage">SnowflakeProgressPercentage</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The callback for Azure PUT operations. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_put_callback_output_stream</code></b>
+                  (<code><span title="typing.IO">IO</span>[str]</code>, default:
+                      <code><span title="sys.stdout">stdout</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The output stream for PUT callbacks. Defaults to sys.stdout.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_get_callback</code></b>
+                  (<code><span title="snowflake.connector.file_transfer_agent.SnowflakeProgressPercentage">SnowflakeProgressPercentage</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The callback for GET operations. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_get_azure_callback</code></b>
+                  (<code><span title="snowflake.connector.file_transfer_agent.SnowflakeProgressPercentage">SnowflakeProgressPercentage</span></code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The callback for Azure GET operations. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_get_callback_output_stream</code></b>
+                  (<code><span title="typing.IO">IO</span>[str]</code>, default:
+                      <code><span title="sys.stdout">stdout</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The output stream for GET callbacks. Defaults to sys.stdout.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_show_progress_bar</code></b>
+                  (<code>bool</code>, default:
+                      <code>True</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to show a progress bar. Defaults to True.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_statement_params</code></b>
+                  (<code>dict[str, str] | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The statement parameters. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_is_internal</code></b>
+                  (<code>bool</code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether the command is internal. Defaults to False.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_describe_only</code></b>
+                  (<code>bool</code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to describe only. Defaults to False.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_no_results</code></b>
+                  (<code>bool</code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to return no results. Defaults to False.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_is_put_get</code></b>
+                  (<code>bool | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether the command is a PUT or GET operation. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_raise_put_get_error</code></b>
+                  (<code>bool</code>, default:
+                      <code>True</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to raise an error on PUT or GET failure. Defaults to True.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>_force_put_overwrite</code></b>
+                  (<code>bool</code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to force PUT overwrite. Defaults to False.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>file_stream</code></b>
+                  (<code><span title="typing.IO">IO</span>[bytes] | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The file stream to use. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>logger</code></b>
+                  (<code><span title="logging.Logger">Logger</span> | None</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The logger to use.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>command_id</code></b>
+                  (<code>str</code>, default:
+                      <code>None</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The ID to use in the logs. Generates a random one if not provided. Defaults to None.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>obfuscate_params</code></b>
+                  (<code>bool | str | list[str]</code>, default:
+                      <code>False</code>
+)
+              –
+              <div class="doc-md-description">
+                <p>Whether to obfuscate the parameters in the logs.
+If <code>True</code>, obfuscates all parameters. If a string or list of strings, obfuscates only the specified parameters.
+Defaults to False.</p>
+              </div>
+            </li>
+            <li>
+              <b><code>level</code></b>
+                  (<code>int | str</code>, default:
+                      <code><span title="logging.DEBUG">DEBUG</span></code>
+)
+              –
+              <div class="doc-md-description">
+                <p>The logging level to use. Defaults to logging.DEBUG.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<table class="field-list">
+  <colgroup>
+    <col class="field-name" />
+    <col class="field-body" />
+  </colgroup>
+  <tbody valign="top">
+    <tr class="field">
+      <th class="field-name">Returns:</th>
+      <td class="field-body">
+        <ul class="first simple">
+            <li>
+                  <code><span title="snowflake.connector.cursor.SnowflakeCursor">SnowflakeCursor</span> | dict[str, <span title="typing.Any">Any</span>] | None</code>
+              –
+              <div class="doc-md-description">
+                <p>SnowflakeCursor | dict[str, Any] | None: The result of the <code>c.execute</code>.</p>
+              </div>
+            </li>
+        </ul>
+      </td>
+    </tr>
+  </tbody>
+</table>        <p>Example:</p>
+<pre><code>```python
+import logging
+from snowflake.connector import connect
+from prefecto.ext.snowflake import execute
+
+c = connect(...).cursor()
+execute(c, "SELECT * FROM table")
+```
+
+Produces logs like
+
+```txt
+INFO - [rustic-human] Beginning command.
+DEBUG - [rustic-human] Executing command:
+SELECT * FROM table
+INFO - [rustic-human] Command executed successfully.
+```
+
+And tracebacks like
+
+```txt
+ERROR - [rustic-human] Command failed.
+Traceback (most recent call last):
+...
+snowflake.connector.errors.ProgrammingError: ...
+[rustic-human] Command failed
+SELECT * FROM table
+```
+
+You can also obfuscate parameters:
+
+```python
+execute(c, "SELECT * FROM table WHERE id = %(id)s", params={"id": 123}, obfuscate_params=True)
+execute(c, "SELECT * FROM table WHERE id = %(id)s AND %(secret)s", params={"id": 123, "secret": "shhh"}, obfuscate_params=["secret"])
+```
+
+```txt
+INFO - [delightful-octopus] Beginning command.
+DEBUG - [delightful-octopus] Executing command:
+SELECT * FROM table WHERE id = ****
+INFO - [delightful-octopus] Command executed successfully.
+INFO - [super-athlete] Beginning command.
+DEBUG - [super-athlete] Executing command:
+SELECT * FROM table WHERE id = 123 AND secret = ****
+INFO - [super-athlete] Command executed successfully.
+```
+</code></pre>
+
+    </div>
+
+</div>
+
+
+
+  </div>
+
+    </div>
+
+</div>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../logging/" class="btn btn-neutral float-left" title="Logging"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+        <span>
+          <a href="https://github.com/dominictarro/prefecto" class="fa fa-github" style="color: #fcfcfc"> GitHub</a>
+        </span>
+    
+    
+      <span><a href="../../logging/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
