@@ -335,6 +335,29 @@ def execute(
 
 
 class LogCursor(_SnowflakeCursor):
+    """A Snowflake cursor that logs command executions. The `execute` method has additional parameters for altering log behavior.
+
+    Example:
+
+        ```python
+        from snowflake.connector import connect
+        from prefecto.ext.snowflake import LogCursor
+
+        c = connect(...).cursor(LogCursor)
+        c: LogCursor
+        c.execute("SELECT * FROM table")
+        ```
+
+        Produces logs like
+
+        ```txt
+        INFO - [rustic-human] Beginning command.
+        DEBUG - [rustic-human] Executing command:
+        SELECT * FROM table
+        INFO - [rustic-human] Command executed successfully.
+        ```
+    """
+
     def execute(
         self,
         command: str,
