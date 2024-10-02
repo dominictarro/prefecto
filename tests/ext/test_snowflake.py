@@ -75,6 +75,12 @@ def test_execute_log_level_adjustment(
             "SELECT * FROM table",
         ),
         (
+            "SELECT * FROM table",
+            None,
+            None,
+            "SELECT * FROM table",
+        ),
+        (
             "SELECT * FROM table WHERE id = %(id)s",
             {"id": 123},
             False,
