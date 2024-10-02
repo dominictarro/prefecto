@@ -164,7 +164,7 @@ def _execute(
 
     # Obfuscate parameters if requested
     formatted_command_string = command % _obfuscate_params(
-        kwargs.get("params", {}), obfuscate_params
+        kwargs.get("params", {}) or {}, obfuscate_params
     )
 
     logger.info("Beginning command.")
